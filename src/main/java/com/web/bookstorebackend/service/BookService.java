@@ -1,21 +1,31 @@
 package com.web.bookstorebackend.service;
 
+import com.web.bookstorebackend.dao.BookDao;
+import com.web.bookstorebackend.dto.GetBooksDto;
+import com.web.bookstorebackend.dto.ResponseDto;
 import com.web.bookstorebackend.model.Book;
-import com.web.bookstorebackend.repository.Bookrepository;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class BookService {
 
-    private final Bookrepository bookrepository;
+    private final BookDao bookDao;
 
-    public BookService(Bookrepository bookrepository) {
-        this.bookrepository = bookrepository;
+    public BookService(BookDao bookDao) {
+        this.bookDao = bookDao;
     }
 
-    public List<Book> findAllBooks() {
-        return bookrepository.findAll();
+    public GetBooksDto getAllBooks() {
+        return new GetBooksDto(bookDao.findAll());
+    }
+
+    public Book getBookById(Integer id) {
+        return bookDao.findById(id);
+    }
+
+
+    public ResponseDto createBook(Book book) {
+        bookDao.save(book);
+        return new ResponseDto(true, "Book added successfully");
     }
 }
