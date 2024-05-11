@@ -10,3 +10,8 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+token:
+  secretKey: your_secret_key
+  refreshTime: 86400000
+  expiresTime: 3600000

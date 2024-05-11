@@ -35,6 +35,7 @@ public class BookController {
         }
     }
 
+    // 仅供测试用
     @PostMapping
     public ResponseDto createBook(@RequestBody Book book) {
         try {

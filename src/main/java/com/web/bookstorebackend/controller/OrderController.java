@@ -5,6 +5,7 @@ import com.web.bookstorebackend.dto.AddOrderDto;
 import com.web.bookstorebackend.dto.ResponseDto;
 import com.web.bookstorebackend.model.Order;
 import com.web.bookstorebackend.service.OrderService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,11 +30,11 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseDto addOrder(@RequestBody AddOrderDto AddOrderDto) {
+    public ResponseEntity<Object> addOrder(@RequestBody AddOrderDto AddOrderDto) {
         try {
-            return orderService.addOrder(AddOrderDto);
+            return ResponseEntity.ok(orderService.addOrder(AddOrderDto));
         } catch (Exception e) {
-            return new ResponseDto(false, e.getMessage());
+            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
         }
     }
 }

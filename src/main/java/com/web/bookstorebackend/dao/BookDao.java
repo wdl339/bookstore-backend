@@ -2,6 +2,7 @@ package com.web.bookstorebackend.dao;
 
 import com.web.bookstorebackend.model.Book;
 import com.web.bookstorebackend.repository.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -9,12 +10,9 @@ import java.util.List;
 @Component
 public class BookDao {
 
-    private final BookRepository bookrepository;
+    @Autowired
+    private BookRepository bookrepository;
 
-    public BookDao(BookRepository bookrepository) {
-
-        this.bookrepository = bookrepository;
-    }
 
     public List<Book> findAll() {
 

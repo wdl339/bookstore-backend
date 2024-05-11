@@ -27,7 +27,7 @@ public class Order {
 
     private double totalPrice;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<OrderItem> items;
 
     public Order(AddOrderDto AddOrderDto, List<OrderItem> items) {
