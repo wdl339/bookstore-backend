@@ -1,5 +1,6 @@
 package com.web.bookstorebackend.model;
 
+import com.web.bookstorebackend.util.OrderItemStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -12,14 +13,21 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    private int userId;
+
     @ManyToOne
     private Book book;
 
     private int number;
 
-    public OrderItem(Book book, int number) {
+    private OrderItemStatus status;
+
+
+    public OrderItem(Book book, int number, int userId, OrderItemStatus status) {
         this.book = book;
         this.number = number;
+        this.userId = userId;
+        this.status = status;
     }
 
     public OrderItem() {

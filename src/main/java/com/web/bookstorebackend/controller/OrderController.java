@@ -1,7 +1,8 @@
 package com.web.bookstorebackend.controller;
 
+import com.web.bookstorebackend.dto.AddOrderFromBookDto;
 import com.web.bookstorebackend.dto.GetBooksDto;
-import com.web.bookstorebackend.dto.AddOrderDto;
+import com.web.bookstorebackend.dto.AddOrderFromCartDto;
 import com.web.bookstorebackend.dto.ResponseDto;
 import com.web.bookstorebackend.model.Order;
 import com.web.bookstorebackend.service.OrderService;
@@ -21,18 +22,30 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<Order> getAllOrders() {
+    public List<Order> getOrders(@RequestAttribute("userId") Integer userId) {
         try {
-            return orderService.getAllOrders();
+            return orderService.getOrders(userId);
         } catch (Exception e) {
             return null;
         }
     }
 
     @PostMapping
-    public ResponseEntity<Object> addOrder(@RequestBody AddOrderDto AddOrderDto) {
+    public ResponseEntity<Object> addOrderFromCart(@RequestBody AddOrderFromCartDto addOrderFromCartDto,
+                                           @RequestAttribute("userId") Integer userId) {
         try {
-            return ResponseEntity.ok(orderService.addOrder(AddOrderDto));
+            return ResponseEntity.ok(orderService.addOrderFromCart(addOrderFromCartDto, userId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{bookId}")
+    public ResponseEntity<Object> addOrderFromBook(@PathVariable Integer bookId,
+                                           @RequestBody AddOrderFromBookDto addOrderFromBookDto,
+                                           @RequestAttribute("userId") Integer userId) {
+        try {
+            return ResponseEntity.ok(orderService.addOrderFromBook(bookId, addOrderFromBookDto, userId));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
         }

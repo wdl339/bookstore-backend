@@ -1,5 +1,6 @@
 package com.web.bookstorebackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -31,13 +32,9 @@ public class User {
     private String description;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    @JsonIgnore
     private UserAuth userAuth;
-
-    @OneToMany
-    private List<OrderItem> cart;
-
-    @OneToMany
-    private List<Order> orders;
 
     public User(String name, String email, String avatar, String phone, String address, double balance, int level, String description, UserAuth userAuth) {
         this.name = name;

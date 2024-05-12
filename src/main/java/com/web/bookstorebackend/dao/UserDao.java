@@ -16,22 +16,20 @@ public class UserDao {
     @Autowired
     private UserAuthRepository userAuthRepository;
 
-    public void save(User user) {
+    public void saveUser(User user) {
         userRepository.save(user);
     }
 
-    public User findByName(String name){
+    public void saveUserAuth(UserAuth userAuth) {
+        userAuthRepository.save(userAuth);
+    }
+
+    public User findUserByName(String name){
         return userRepository.findByName(name).orElse(null);
     }
 
-    public UserAuth getAuthByName(String name){
-        User user = findByName(name);
-
-        if (user == null) {
-            return null;
-        } else {
-            return user.getUserAuth();
-        }
+    public User findUserById(int id){
+        return userRepository.findById(id).orElse(null);
     }
 
 }

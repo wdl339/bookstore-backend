@@ -6,4 +6,9 @@ import lombok.Data;
 public class AddToCartDto {
     private Integer bookId;
     private Integer number;
+
+    public AddToCartDto(int bookId, Integer number) {
+        this.bookId = bookId;
+        this.number = number;
+    }
 }

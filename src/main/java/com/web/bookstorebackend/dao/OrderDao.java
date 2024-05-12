@@ -15,8 +15,8 @@ public class OrderDao {
         this.orderRepository = orderRepository;
     }
 
-    public List<Order> findAll() {
-        return orderRepository.findAll();
+    public List<Order> findAllOrdersByUserId(Integer userId) {
+        return orderRepository.findAllByUserId(userId);
     }
 
     public void addOrder(Order order) {

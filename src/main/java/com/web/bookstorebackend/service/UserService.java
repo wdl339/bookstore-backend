@@ -5,13 +5,12 @@ import com.web.bookstorebackend.dto.LoginDto;
 import com.web.bookstorebackend.dto.RegisterDto;
 import com.web.bookstorebackend.model.User;
 import com.web.bookstorebackend.model.UserAuth;
-import com.web.bookstorebackend.repository.UserAuthRepository;
 import com.web.bookstorebackend.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserSerivce {
+public class UserService {
 
     @Autowired
     private UserDao userDao;
@@ -21,33 +20,39 @@ public class UserSerivce {
 
     public void registerUser(RegisterDto info){
 
-        if (userDao.findByName(info.getName()) != null){
+        if (userDao.findUserByName(info.getName()) != null){
             throw new RuntimeException("User already exists");
         }
 
         UserAuth userAuth = new UserAuth();
         userAuth.setPassword(info.getPassword());
+        userDao.saveUserAuth(userAuth);
 
-        User user = new User(info.getName(), info.getEmail(), "", info.getPhone(), "",
+        User user = new User(info.getName(), info.getEmail(), "/defaultAvatar.jpg", info.getPhone(), "",
                 10000000.0, 1, "", userAuth);
 
-        userDao.save(user);
+        userDao.saveUser(user);
     }
 
-    public String login(LoginDto user){
+    public String login(LoginDto userInfo){
 
-        if (!validateUser(user)){
-            throw new RuntimeException("Invalid username or password");
+        User user = userDao.findUserByName(userInfo.username);
+
+        if (user == null){
+            throw new RuntimeException("Invalid username");
         }
 
+        if (!user.getUserAuth().getPassword().equals(userInfo.password)){
+            throw new RuntimeException("Invalid password");
+        }
+
+        String userId = String.valueOf(user.getId());
+
         String role = "ROLE_ADMIN";
-        return tokenUtil.getToken(user.username,role);
+        return tokenUtil.getToken(userId, role);
     }
 
-    public boolean validateUser(LoginDto info){
-        String username = info.username;
-        UserAuth userAuth = userDao.getAuthByName(username);
-
-        return userAuth != null && userAuth.getPassword().equals(info.password);
+    public User getUserById(String id){
+        return userDao.findUserById(Integer.parseInt(id));
     }
 }
