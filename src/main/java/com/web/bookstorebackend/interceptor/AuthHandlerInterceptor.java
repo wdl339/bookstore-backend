@@ -1,6 +1,5 @@
 package com.web.bookstorebackend.interceptor;
 
-import com.web.bookstorebackend.model.User;
 import com.web.bookstorebackend.util.TokenUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.method.HandlerMethod;
 import jakarta.servlet.http.Cookie;
-import com.web.bookstorebackend.service.UserService;
 
 import java.util.Map;
 
@@ -20,7 +18,7 @@ import java.util.Map;
 public class AuthHandlerInterceptor implements HandlerInterceptor {
 
     @Autowired
-    TokenUtil tokenUtil;
+    private TokenUtil tokenUtil;
 
     @Value("${token.refreshTime}")
     private Long refreshTime;
@@ -53,27 +51,33 @@ public class AuthHandlerInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        Map<String, String> map = tokenUtil.parseToken(token);
-        String userId = map.get("userId");
-        String userRole = map.get("userRole");
-        Integer id = Integer.parseInt(userId);
+        try {
+            Map<String, String> map = tokenUtil.parseToken(token);
+            String userId = map.get("userId");
+            String userRole = map.get("userRole");
+            Integer id = Integer.parseInt(userId);
 
-        httpServletRequest.setAttribute("userId", id);
+            httpServletRequest.setAttribute("userId", id);
 
-        long timeOfUse = System.currentTimeMillis() - Long.parseLong(map.get("timeStamp"));
+            long timeOfUse = System.currentTimeMillis() - Long.parseLong(map.get("timeStamp"));
 
-        if (timeOfUse < refreshTime) {
+            if (timeOfUse < refreshTime) {
 //            log.info("token验证成功");
-            return true;
-        }
+                return true;
+            }
 
-        else if (timeOfUse >= refreshTime && timeOfUse < expiresTime) {
-            httpServletResponse.setHeader("token", tokenUtil.getToken(userId,userRole));
+            else if (timeOfUse >= refreshTime && timeOfUse < expiresTime) {
+                httpServletResponse.setHeader("token", tokenUtil.getToken(userId,userRole));
 //            log.info("token刷新成功");
-            return true;
-        }
+                return true;
+            }
 
-        else {
+            else {
+                httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return false;
+            }
+
+        } catch (Exception e) {
             httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }

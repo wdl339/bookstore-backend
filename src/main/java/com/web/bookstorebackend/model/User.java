@@ -19,13 +19,14 @@ public class User {
 
     private String email;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String avatar;
 
     private String phone;
 
     private String address;
 
-    private double balance;
+    private int balance;
 
     private int level;
 
@@ -36,7 +37,7 @@ public class User {
     @JsonIgnore
     private UserAuth userAuth;
 
-    public User(String name, String email, String avatar, String phone, String address, double balance, int level, String description, UserAuth userAuth) {
+    public User(String name, String email, String avatar, String phone, String address, int balance, int level, String description, UserAuth userAuth) {
         this.name = name;
         this.email = email;
         this.avatar = avatar;

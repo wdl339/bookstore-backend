@@ -1,35 +1,25 @@
 package com.web.bookstorebackend.dao;
 
+import com.web.bookstorebackend.dto.EditProfileDto;
 import com.web.bookstorebackend.model.User;
 import com.web.bookstorebackend.model.UserAuth;
-import com.web.bookstorebackend.repository.UserAuthRepository;
-import com.web.bookstorebackend.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
-public class UserDao {
+public interface UserDao {
 
-    @Autowired
-    private UserRepository userRepository;
+    void saveUser(User user);
 
-    @Autowired
-    private UserAuthRepository userAuthRepository;
+    void saveUserAuth(UserAuth userAuth);
 
-    public void saveUser(User user) {
-        userRepository.save(user);
-    }
+    User findUserByName(String name);
 
-    public void saveUserAuth(UserAuth userAuth) {
-        userAuthRepository.save(userAuth);
-    }
+    User findUserById(int id);
 
-    public User findUserByName(String name){
-        return userRepository.findByName(name).orElse(null);
-    }
+    UserAuth findUserAuthById(int id);
 
-    public User findUserById(int id){
-        return userRepository.findById(id).orElse(null);
-    }
+    void updateUser(User user, EditProfileDto editProfileDto);
+
+    void changePassword(UserAuth userAuth, String newPassword);
+
+    void updateBalance(User user, int subtract);
 
 }

@@ -14,4 +14,11 @@ public class UserAuth {
 
     private String password;
 
+    public UserAuth(String password) {
+        this.password = password;
+    }
+
+    public UserAuth() {
+    }
+
 }

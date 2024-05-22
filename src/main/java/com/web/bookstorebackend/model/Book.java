@@ -21,7 +21,7 @@ public class Book {
 
     private String isbn;
 
-    private double price;
+    private int price;
 
     private String cover;
 

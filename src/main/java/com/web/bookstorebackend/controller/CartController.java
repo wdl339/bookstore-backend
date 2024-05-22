@@ -3,9 +3,8 @@ package com.web.bookstorebackend.controller;
 import com.web.bookstorebackend.dto.AddToCartDto;
 import com.web.bookstorebackend.dto.ResponseDto;
 import com.web.bookstorebackend.model.OrderItem;
-import com.web.bookstorebackend.model.User;
 import com.web.bookstorebackend.service.CartService;
-import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +14,8 @@ import java.util.List;
 @RequestMapping("/api/cart")
 public class CartController {
 
-    private final CartService cartService;
-
-    public CartController(CartService cartService) {
-        this.cartService = cartService;
-    }
+    @Autowired
+    private CartService cartService;
 
     @GetMapping
     public List<OrderItem> getCart(@RequestAttribute("userId") Integer userId) {

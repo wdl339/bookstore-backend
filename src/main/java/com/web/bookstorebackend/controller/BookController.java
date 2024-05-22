@@ -4,18 +4,15 @@ import com.web.bookstorebackend.dto.GetBooksDto;
 import com.web.bookstorebackend.dto.ResponseDto;
 import com.web.bookstorebackend.model.Book;
 import com.web.bookstorebackend.service.BookService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
 
-    private final BookService bookService;
-
-    public BookController(BookService bookService) {
-
-        this.bookService = bookService;
-    }
+    @Autowired
+    private BookService bookService;
 
     @GetMapping
     public GetBooksDto getAllBooks() {
@@ -44,6 +41,5 @@ public class BookController {
             return null;
         }
     }
-
     
 }

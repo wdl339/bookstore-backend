@@ -1,8 +1,6 @@
 package com.web.bookstorebackend.controller;
 
-import com.web.bookstorebackend.dto.LoginDto;
-import com.web.bookstorebackend.dto.RegisterDto;
-import com.web.bookstorebackend.dto.ResponseDto;
+import com.web.bookstorebackend.dto.*;
 import com.web.bookstorebackend.model.User;
 import com.web.bookstorebackend.service.UserService;
 import com.web.bookstorebackend.util.TokenUtil;
@@ -12,13 +10,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
 
     @Autowired
-    TokenUtil tokenUtil;
+    private TokenUtil tokenUtil;
 
     @Autowired
     private UserService userService;
@@ -42,9 +45,10 @@ public class UserController {
             Cookie cookie = new Cookie("token", token);
             cookie.setMaxAge(24 * 60 * 60);
             cookie.setPath("/");
+            cookie.setSecure(true);
             response.addCookie(cookie);
 
-            return ResponseEntity.ok(new ResponseDto(true, token));
+            return ResponseEntity.ok(new ResponseDto(true, "Login success"));
         } catch (Exception e){
             return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
         }
@@ -58,7 +62,7 @@ public class UserController {
             cookie.setPath("/");
             response.addCookie(cookie);
 
-            return ResponseEntity.ok(new ResponseDto(true,""));
+            return ResponseEntity.ok(new ResponseDto(true,"Logout success"));
         } catch (Exception e){
             return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
         }
@@ -67,7 +71,52 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<Object> getProfile(@RequestAttribute("userId") Integer userId){
         try {
-            return ResponseEntity.ok(userService.getUserById(userId.toString()));
+            return ResponseEntity.ok(userService.getUserById(userId));
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
+        }
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<Object> updateProfile(@RequestAttribute("userId") Integer userId,
+                                                @RequestBody EditProfileDto editProfileDto){
+        try {
+            return ResponseEntity.ok(userService.updateProfile(userId, editProfileDto));
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
+        }
+    }
+
+    @PutMapping("/password")
+    public ResponseEntity<Object> changePassword(@RequestAttribute("userId") Integer userId,
+                                                 @RequestBody ChangePasswordDto changePasswordDto){
+        try {
+            return ResponseEntity.ok(userService.changePassword(userId, changePasswordDto));
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
+        }
+    }
+
+    @GetMapping("/avatar")
+    public ResponseEntity<Object> getAvatar(@RequestAttribute("userId") Integer userId){
+        try {
+            User user = userService.getUserById(userId);
+            Map<String, String> avatarResponse = new HashMap<>();
+            avatarResponse.put("avatar", user.getAvatar());
+            return ResponseEntity.ok(avatarResponse);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
+        }
+    }
+
+    @PostMapping("/avatar")
+    public ResponseEntity<Object> updateAvatar(@RequestAttribute("userId") Integer userId,
+                             @RequestParam("avatar") MultipartFile file){
+        try {
+            String base64Avatar = Base64.getEncoder().encodeToString(file.getBytes());
+            base64Avatar = "data:image/png;base64," + base64Avatar;
+
+            return ResponseEntity.ok(userService.updateAvatar(userId, base64Avatar));
         } catch (Exception e){
             return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
         }
@@ -79,7 +128,7 @@ public class UserController {
         try {
             String token = request.getHeader("token");
             tokenUtil.parseToken(token);
-            return "请求成功";
+            return "Token is valid";
         } catch (Exception e){
             return e.getMessage();
         }

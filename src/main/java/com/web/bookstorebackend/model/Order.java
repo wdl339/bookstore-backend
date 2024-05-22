@@ -28,27 +28,27 @@ public class Order {
 
     private String phone;
 
-    private double totalPrice;
+    private int totalPrice;
 
     @OneToMany(cascade = CascadeType.ALL,  fetch = FetchType.LAZY)
     private List<OrderItem> items;
 
-    public Order(AddOrderFromCartDto addOrderFromCartDto, List<OrderItem> items, int userId) {
+    public Order(AddOrderFromCartDto addOrderFromCartDto, List<OrderItem> items, int userId, int totalPrice) {
         this.createAt = Instant.now();
         this.receiver = addOrderFromCartDto.getReceiver();
         this.address = addOrderFromCartDto.getAddress();
         this.phone = addOrderFromCartDto.getPhone();
-        this.totalPrice = items.stream().mapToDouble(item -> item.getBook().getPrice() * item.getNumber()).sum();
+        this.totalPrice = totalPrice;
         this.items = items;
         this.userId = userId;
     }
 
-    public Order(AddOrderFromBookDto addOrderFromBookDto, OrderItem orderItem, int userId) {
+    public Order(AddOrderFromBookDto addOrderFromBookDto, OrderItem orderItem, int userId, int totalPrice) {
         this.createAt = Instant.now();
         this.receiver = addOrderFromBookDto.getReceiver();
         this.address = addOrderFromBookDto.getAddress();
         this.phone = addOrderFromBookDto.getPhone();
-        this.totalPrice = orderItem.getBook().getPrice() * orderItem.getNumber();
+        this.totalPrice = totalPrice;
         this.items = List.of(orderItem);
         this.userId = userId;
     }
