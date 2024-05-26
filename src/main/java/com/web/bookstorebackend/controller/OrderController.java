@@ -48,4 +48,15 @@ public class OrderController {
             return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
         }
     }
+
+    @GetMapping("/statistics")
+    public ResponseEntity<Object> getBuyBooks(@RequestParam String startTime,
+                                              @RequestParam String endTime,
+                                              @RequestAttribute("userId") Integer userId) {
+        try {
+            return ResponseEntity.ok(orderService.getBuyBooks(startTime, endTime, userId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
+        }
+    }
 }

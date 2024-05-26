@@ -18,15 +18,18 @@ public class OrderItem {
     @ManyToOne
     private Book book;
 
+    private int price;
+
     private int number;
 
     private OrderItemStatus status;
 
 
     public OrderItem(Book book, int number, int userId, OrderItemStatus status) {
+        this.userId = userId;
         this.book = book;
         this.number = number;
-        this.userId = userId;
+        this.price = book.getPrice();
         this.status = status;
     }
 

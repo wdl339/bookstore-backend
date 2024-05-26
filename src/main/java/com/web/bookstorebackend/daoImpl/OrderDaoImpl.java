@@ -27,4 +27,8 @@ public class OrderDaoImpl implements OrderDao {
     public List<Order> findOrdersByCreateTimeBetween(@Param("startTime") Instant startTime, @Param("endTime") Instant endTime){
         return orderRepository.findAllByCreateAtBetween(startTime, endTime);
     }
+
+    public List<Order> findOrdersByCreateTimeBetweenAndUserId(@Param("startTime") Instant startTime, @Param("endTime") Instant endTime, @Param("userId") Integer userId){
+        return orderRepository.findAllByCreateAtBetweenAndUserId(startTime, endTime, userId);
+    }
 }

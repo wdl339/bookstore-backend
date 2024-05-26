@@ -4,10 +4,7 @@ import com.web.bookstorebackend.dao.BookDao;
 import com.web.bookstorebackend.dao.OrderDao;
 import com.web.bookstorebackend.dao.OrderItemDao;
 import com.web.bookstorebackend.dao.UserDao;
-import com.web.bookstorebackend.dto.AddOrderFromBookDto;
-import com.web.bookstorebackend.dto.AddOrderFromCartDto;
-import com.web.bookstorebackend.dto.AddToCartDto;
-import com.web.bookstorebackend.dto.ResponseDto;
+import com.web.bookstorebackend.dto.*;
 import com.web.bookstorebackend.model.Book;
 import com.web.bookstorebackend.model.Order;
 import com.web.bookstorebackend.model.OrderItem;
@@ -17,7 +14,8 @@ import com.web.bookstorebackend.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.Instant;
+import java.util.*;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -116,4 +114,36 @@ public class OrderServiceImpl implements OrderService {
         return new ResponseDto(true, "Order added successfully");
     }
 
+    public List<GetBuyBookDto> getBuyBooks(String startTime, String endTime, int userId) {
+        Instant start = Objects.equals(startTime, "") ? Instant.EPOCH : Instant.parse(startTime + "Z");
+        Instant end = Objects.equals(endTime, "") ? Instant.now() : Instant.parse(endTime + "Z");
+        List<Order> orders = orderDao.findOrdersByCreateTimeBetweenAndUserId(start, end, userId);
+        Map<Book, Integer> BookNum = new HashMap<>();
+        Map<Book, Integer> BookPrice = new HashMap<>();
+
+        for (Order order : orders) {
+            List<OrderItem> orderItems = order.getItems();
+            for (OrderItem orderItem : orderItems) {
+                Book book = orderItem.getBook();
+                Integer number = orderItem.getNumber();
+                Integer price = orderItem.getPrice();
+                if (BookNum.containsKey(book)) {
+                    BookNum.put(book, BookNum.get(book) + number);
+                    BookPrice.put(book, BookPrice.get(book) + price * number);
+                } else {
+                    BookNum.put(book, number);
+                    BookPrice.put(book, price * number);
+                }
+            }
+        }
+
+        List<GetBuyBookDto> result = new ArrayList<>();
+        for (Map.Entry<Book, Integer> entry : BookNum.entrySet()) {
+            Book book = entry.getKey();
+            Integer number = entry.getValue();
+            Integer price = BookPrice.get(book);
+            result.add(new GetBuyBookDto(book, price, number));
+        }
+        return result;
+    }
 }

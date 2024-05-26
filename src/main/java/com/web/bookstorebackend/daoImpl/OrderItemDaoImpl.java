@@ -50,12 +50,14 @@ public class OrderItemDaoImpl implements OrderItemDao {
 
     public void updateOrderItemStatus(OrderItem orderItem) {
         orderItem.setStatus(OrderItemStatus.Ordered);
+        orderItem.setPrice(orderItem.getBook().getPrice());
         orderItemRepository.save(orderItem);
     }
 
     public void updateOrderItemsStatus(List<OrderItem> orderItems) {
         for (OrderItem orderItem : orderItems) {
             orderItem.setStatus(OrderItemStatus.Ordered);
+            orderItem.setPrice(orderItem.getBook().getPrice());
             orderItemRepository.save(orderItem);
         }
     }

@@ -12,4 +12,6 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     List<Order> findAllByUserIdOrderByCreateAtDesc(Integer userId);
 
     List<Order> findAllByCreateAtBetween(Instant startTime, Instant endTime);
+
+    List<Order> findAllByCreateAtBetweenAndUserId(Instant startTime, Instant endTime, Integer userId);
 }
