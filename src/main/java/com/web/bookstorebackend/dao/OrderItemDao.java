@@ -10,11 +10,13 @@ public interface OrderItemDao {
     OrderItem findById(Integer id) ;
 
     List<OrderItem> findByItemIds(List<Integer> orderIds) ;
-    void addOrderItem(OrderItem orderItem) ;
+    void addOrderItem(OrderItem orderItem);
 
     void updateOrderItemNumber(OrderItem orderItem, Integer number) ;
     void deleteOrderItem(Integer id) ;
     void updateOrderItemStatus(OrderItem orderItem) ;
 
     void updateOrderItemsStatus(List<OrderItem> orderItems) ;
+
+
 }

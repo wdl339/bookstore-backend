@@ -1,7 +1,10 @@
 package com.web.bookstorebackend.serviceImpl;
 
+import com.web.bookstorebackend.dao.OrderDao;
 import com.web.bookstorebackend.dao.UserDao;
 import com.web.bookstorebackend.dto.*;
+import com.web.bookstorebackend.model.Order;
+import com.web.bookstorebackend.model.OrderItem;
 import com.web.bookstorebackend.model.User;
 import com.web.bookstorebackend.model.UserAuth;
 import com.web.bookstorebackend.service.UserService;
@@ -9,11 +12,17 @@ import com.web.bookstorebackend.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.*;
+
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private OrderDao orderDao;
 
     @Autowired
     TokenUtil tokenUtil;
@@ -86,5 +95,35 @@ public class UserServiceImpl implements UserService {
         userInDb.setAvatar(avatar);
         userDao.saveUser(userInDb);
         return new ResponseDto(true, "Avatar updated successfully");
+    }
+
+    public List<GetRankUserDto> getRankUsers(String startTime, String endTime, int topNumber){
+        Instant start = Objects.equals(startTime, "") ? Instant.EPOCH : Instant.parse(startTime + "Z");
+        Instant end = Objects.equals(endTime, "") ? Instant.now() : Instant.parse(endTime + "Z");
+        List<Order> orders = orderDao.findOrdersByCreateTimeBetween(start, end);
+        Map<Integer, Integer> rankUsers = new HashMap<>();
+
+        for (Order order : orders) {
+            List<OrderItem> orderItems = order.getItems();
+            for (OrderItem orderItem : orderItems) {
+                Integer userId = orderItem.getUserId();
+                Integer number = orderItem.getNumber();
+                if (rankUsers.containsKey(userId)) {
+                    rankUsers.put(userId, rankUsers.get(userId) + number);
+                } else {
+                    rankUsers.put(userId, number);
+                }
+            }
+        }
+
+        List<GetRankUserDto> result = new ArrayList<>();
+        rankUsers.entrySet().stream()
+                .sorted((o1, o2) -> o2.getValue().compareTo(o1.getValue()))
+                .limit(topNumber)
+                .forEach(entry -> {
+                    User user = userDao.findUserById(entry.getKey());
+                    result.add(new GetRankUserDto(user.getName(), entry.getValue()));
+                });
+        return result;
     }
 }

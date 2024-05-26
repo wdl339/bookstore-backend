@@ -3,6 +3,8 @@ package com.web.bookstorebackend.service;
 import com.web.bookstorebackend.dto.*;
 import com.web.bookstorebackend.model.User;
 
+import java.util.List;
+
 public interface UserService {
     void registerUser(RegisterDto info);
 
@@ -13,4 +15,6 @@ public interface UserService {
     ResponseDto updateProfile(int userId, EditProfileDto editProfileDto);
 
     ResponseDto updateAvatar(int userId, String avatar);
+
+    List<GetRankUserDto> getRankUsers(String startTime, String endTime, int topNumber);
 }

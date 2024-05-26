@@ -32,10 +32,20 @@ public class User {
 
     private String description;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
     @JsonIgnore
     private UserAuth userAuth;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    @JsonIgnore
+    private List<Order> orders;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    @JsonIgnore
+    private List<OrderItem> orderItems;
 
     public User(String name, String email, String avatar, String phone, String address, int balance, int level, String description, UserAuth userAuth) {
         this.name = name;

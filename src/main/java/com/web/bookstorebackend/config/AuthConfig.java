@@ -19,3 +19,4 @@ public class AuthConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/api/user/login", "/api/user/register");
     }
 }
+

@@ -122,6 +122,17 @@ public class UserController {
         }
     }
 
+    @GetMapping("/rank")
+    public ResponseEntity<Object> getRankUsers(@RequestParam String startTime,
+                                              @RequestParam String endTime,
+                                              @RequestParam Integer topNumber){
+        try {
+            return ResponseEntity.ok(userService.getRankUsers(startTime, endTime, topNumber));
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
+        }
+    }
+
     // 仅供测试用
     @PostMapping("/testToken")
     public String testToken(HttpServletRequest request){
