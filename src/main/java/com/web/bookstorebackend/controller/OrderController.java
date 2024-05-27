@@ -20,9 +20,10 @@ public class OrderController {
 
 
     @GetMapping
-    public List<Order> getOrders(@RequestAttribute("userId") Integer userId) {
+    public List<Order> getOrders(@RequestParam String keyword,
+                                 @RequestAttribute("userId") Integer userId) {
         try {
-            return orderService.getOrders(userId);
+            return orderService.getOrders(userId, keyword);
         } catch (Exception e) {
             return null;
         }

@@ -19,6 +19,11 @@ public class BookDaoImpl implements BookDao {
         return bookrepository.findAll();
     }
 
+    public List<Book> findByTitleContaining(String keyword) {
+
+        return bookrepository.findByTitleContaining(keyword);
+    }
+
     public Book findById(Integer id) {
 
         return bookrepository.findById(id).orElse(null);

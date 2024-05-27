@@ -18,9 +18,10 @@ public class CartController {
     private CartService cartService;
 
     @GetMapping
-    public List<OrderItem> getCart(@RequestAttribute("userId") Integer userId) {
+    public List<OrderItem> getCart(@RequestParam String keyword,
+                                   @RequestAttribute("userId") Integer userId) {
         try {
-            return cartService.getCart(userId);
+            return cartService.getCart(userId, keyword);
         } catch (Exception e) {
             return null;
         }

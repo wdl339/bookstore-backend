@@ -19,9 +19,9 @@ public class BookController {
     private BookService bookService;
 
     @GetMapping
-    public ResponseEntity<Object> getAllBooks() {
+    public ResponseEntity<Object> getAllBooks(@RequestParam String keyword) {
         try {
-            return ResponseEntity.ok(bookService.getAllBooks());
+            return ResponseEntity.ok(bookService.getAllBooks(keyword));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
         }

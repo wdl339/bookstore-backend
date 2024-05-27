@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface BookService {
 
-    GetBooksDto getAllBooks();
+    GetBooksDto getAllBooks(String keyword);
 
     Book getBookById(Integer id);
 

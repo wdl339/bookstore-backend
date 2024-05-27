@@ -26,8 +26,12 @@ public class BookServiceImpl implements BookService {
     private OrderDao orderDao;
 
 
-    public GetBooksDto getAllBooks() {
-        return new GetBooksDto(bookDao.findAll());
+    public GetBooksDto getAllBooks(String keyword) {
+        if (Objects.equals(keyword, "")) {
+            return new GetBooksDto(bookDao.findAll());
+        } else {
+            return new GetBooksDto(bookDao.findByTitleContaining(keyword));
+        }
     }
 
     public Book getBookById(Integer id) {

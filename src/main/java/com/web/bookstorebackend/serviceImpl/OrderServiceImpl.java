@@ -35,9 +35,12 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private CartService cartService;
 
-    public List<Order> getOrders(int userId) {
-
-        return orderDao.findAllOrdersByUserId(userId);
+    public List<Order> getOrders(int userId, String keyword) {
+        if (Objects.equals(keyword, "")) {
+            return orderDao.findAllOrdersByUserId(userId);
+        } else {
+            return orderDao.findOrdersByUserIdAndKeyword(userId, keyword);
+        }
     }
 
     public ResponseDto addOrderFromCart(AddOrderFromCartDto addOrderFromCartDto, int userId) {

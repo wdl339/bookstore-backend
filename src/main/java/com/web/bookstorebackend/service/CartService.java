@@ -8,7 +8,7 @@ import com.web.bookstorebackend.model.OrderItem;
 import java.util.List;
 
 public interface CartService {
-    List<OrderItem> getCart(int userId);
+    List<OrderItem> getCart(int userId, String keyword) ;
 
     int addToCart(AddToCartDto addToCartDto, int userId) ;
     ResponseDto changeNumber(int id, int number, int userId) ;

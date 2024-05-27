@@ -2,12 +2,14 @@ package com.web.bookstorebackend.daoImpl;
 
 import com.web.bookstorebackend.dao.OrderDao;
 import com.web.bookstorebackend.model.Order;
+import com.web.bookstorebackend.model.OrderItem;
 import com.web.bookstorebackend.repository.OrderRepository;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -18,6 +20,10 @@ public class OrderDaoImpl implements OrderDao {
 
     public List<Order> findAllOrdersByUserId(Integer userId) {
         return orderRepository.findAllByUserIdOrderByCreateAtDesc(userId);
+    }
+
+    public List<Order> findOrdersByUserIdAndKeyword(@Param("userId") Integer userId, @Param("keyword") String keyword) {
+        return orderRepository.findAllByUserIdAndKeyword(userId, keyword);
     }
 
     public void addOrder(Order order) {

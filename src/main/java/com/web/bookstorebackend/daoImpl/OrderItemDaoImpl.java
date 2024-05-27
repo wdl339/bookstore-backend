@@ -23,6 +23,11 @@ public class OrderItemDaoImpl implements OrderItemDao {
         return orderItemRepository.findAllByUserIdAndStatusOrderByIdDesc(userId, OrderItemStatus.InCart);
     }
 
+    public List<OrderItem> findAllInCartByUserIdAndKeyword(Integer userId, String keyword) {
+
+        return orderItemRepository.findAllByUserIdAndStatusAndBookTitleContaining(userId, OrderItemStatus.InCart, keyword);
+    }
+
     public OrderItem findById(Integer id) {
 
         return orderItemRepository.findById(id).orElse(null);

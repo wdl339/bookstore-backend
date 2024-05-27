@@ -10,6 +10,8 @@ public interface OrderDao {
 
     List<Order> findAllOrdersByUserId(Integer userId);
 
+    List<Order> findOrdersByUserIdAndKeyword(@Param("userId") Integer userId, @Param("keyword") String keyword);
+
     void addOrder(Order order);
 
     List<Order> findOrdersByCreateTimeBetween(@Param("startTime") Instant startTime, @Param("endTime") Instant endTime);

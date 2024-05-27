@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -23,9 +24,12 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private BookService bookService;
 
-    public List<OrderItem> getCart(int userId) {
-
-        return orderItemDao.findAllInCartByUserId(userId);
+    public List<OrderItem> getCart(int userId, String keyword) {
+        if (Objects.equals(keyword, ""))  {
+            return orderItemDao.findAllInCartByUserId(userId);
+        } else {
+            return orderItemDao.findAllInCartByUserIdAndKeyword(userId, keyword);
+        }
     }
 
     public int addToCart(AddToCartDto addToCartDto, int userId) {

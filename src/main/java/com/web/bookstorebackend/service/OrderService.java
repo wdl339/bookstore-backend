@@ -10,7 +10,7 @@ import com.web.bookstorebackend.model.Order;
 import java.util.List;
 
 public interface OrderService {
-    List<Order> getOrders(int userId);
+    List<Order> getOrders(int userId, String keyword);
 
     ResponseDto addOrderFromCart(AddOrderFromCartDto addOrderFromCartDto, int userId);
 

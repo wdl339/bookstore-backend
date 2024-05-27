@@ -7,6 +7,8 @@ import java.util.List;
 public interface OrderItemDao {
     List<OrderItem> findAllInCartByUserId(Integer userId) ;
 
+    List<OrderItem> findAllInCartByUserIdAndKeyword(Integer userId, String keyword) ;
+
     OrderItem findById(Integer id) ;
 
     List<OrderItem> findByItemIds(List<Integer> orderIds) ;
