@@ -29,6 +29,16 @@ public class OrderController {
         }
     }
 
+    @GetMapping("/all")
+    public List<Order> getAllOrders(@RequestParam String keyword,
+                                 @RequestAttribute("userId") Integer userId) {
+        try {
+            return orderService.getAllOrders(userId, keyword);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     @PostMapping
     public ResponseEntity<Object> addOrderFromCart(@RequestBody AddOrderFromCartDto addOrderFromCartDto,
                                            @RequestAttribute("userId") Integer userId) {

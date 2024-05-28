@@ -11,6 +11,7 @@ import com.web.bookstorebackend.model.OrderItem;
 import com.web.bookstorebackend.model.User;
 import com.web.bookstorebackend.service.CartService;
 import com.web.bookstorebackend.service.OrderService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +44,15 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    public List<Order> getAllOrders(int userId, String keyword) {
+        if (Objects.equals(keyword, "")) {
+            return orderDao.findAllOrders();
+        } else {
+            return orderDao.findOrdersByKeyword(keyword);
+        }
+    }
+
+    @Transactional
     public ResponseDto addOrderFromCart(AddOrderFromCartDto addOrderFromCartDto, int userId) {
         List<Integer> orderIds = addOrderFromCartDto.getItemIds();
         List<OrderItem> orderItems = orderItemDao.findByItemIds(orderIds);
@@ -56,6 +66,10 @@ public class OrderServiceImpl implements OrderService {
         for (OrderItem orderItem : orderItems) {
             if (orderItem.getUserId() != userId) {
                 throw new IllegalArgumentException("Some items are not in user's cart");
+            }
+            System.out.println(orderItem.getBook().isActive());
+            if (!(orderItem.getBook().isActive())) {
+                throw new IllegalArgumentException("Book " + orderItem.getBook().getTitle() + " is off the shelf");
             }
         }
 
@@ -90,6 +104,7 @@ public class OrderServiceImpl implements OrderService {
         return new ResponseDto(true, "Order added successfully");
     }
 
+    @Transactional
     public ResponseDto addOrderFromBook(int bookId, AddOrderFromBookDto addOrderFromBookDto, int userId) {
         AddToCartDto addToCartDto = new AddToCartDto(bookId, addOrderFromBookDto.getNumber());
         int itemId = cartService.addToCart(addToCartDto, userId);

@@ -133,6 +133,15 @@ public class UserController {
         }
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<Object> getAllUsers(@RequestParam String keyword){
+        try {
+            return ResponseEntity.ok(userService.getAllUsers(keyword));
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
+        }
+    }
+
     // 仅供测试用
     @PostMapping("/testToken")
     public String testToken(HttpServletRequest request){

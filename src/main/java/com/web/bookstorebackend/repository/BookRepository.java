@@ -11,4 +11,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     List<Book> findByTitleContaining(String keyword);
 
+    List<Book> findAllByActiveTrue();
+    List<Book> findByActiveTrueAndTitleContaining(String keyword);
+
 }

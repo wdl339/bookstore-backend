@@ -10,7 +10,11 @@ public interface OrderDao {
 
     List<Order> findAllOrdersByUserId(Integer userId);
 
+    List<Order> findAllOrders();
+
     List<Order> findOrdersByUserIdAndKeyword(@Param("userId") Integer userId, @Param("keyword") String keyword);
+
+    List<Order> findOrdersByKeyword(@Param("keyword") String keyword);
 
     void addOrder(Order order);
 

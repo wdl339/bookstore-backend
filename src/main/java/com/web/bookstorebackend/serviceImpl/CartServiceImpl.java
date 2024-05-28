@@ -8,6 +8,7 @@ import com.web.bookstorebackend.model.OrderItem;
 import com.web.bookstorebackend.service.BookService;
 import com.web.bookstorebackend.service.CartService;
 import com.web.bookstorebackend.util.OrderItemStatus;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,7 @@ public class CartServiceImpl implements CartService {
         }
     }
 
+    @Transactional
     public int addToCart(AddToCartDto addToCartDto, int userId) {
         int bookId = addToCartDto.getBookId();
         Book book = bookService.getBookById(bookId);
@@ -51,6 +53,7 @@ public class CartServiceImpl implements CartService {
         return orderItem.getId();
     }
 
+    @Transactional
     public ResponseDto changeNumber(int id, int number, int userId) {
         OrderItem orderItem = orderItemDao.findById(id);
         Book book = orderItem.getBook();
@@ -62,6 +65,7 @@ public class CartServiceImpl implements CartService {
         return new ResponseDto(true, "Number changed successfully");
     }
 
+    @Transactional
     public ResponseDto deleteItem(int id, int userId) {
         OrderItem orderItem = orderItemDao.findById(id);
 

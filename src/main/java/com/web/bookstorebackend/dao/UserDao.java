@@ -4,11 +4,17 @@ import com.web.bookstorebackend.dto.EditProfileDto;
 import com.web.bookstorebackend.model.User;
 import com.web.bookstorebackend.model.UserAuth;
 
+import java.util.List;
+
 public interface UserDao {
 
     void saveUser(User user);
 
     void saveUserAuth(UserAuth userAuth);
+
+    List<User> findAllUsers();
+
+    List<User> findAllUsersByNameContaining(String keyword);
 
     User findUserByName(String name);
 

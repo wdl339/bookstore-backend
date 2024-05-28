@@ -1,14 +1,14 @@
 package com.web.bookstorebackend.controller;
 
-import com.web.bookstorebackend.dto.GetBooksDto;
-import com.web.bookstorebackend.dto.GetRankBookDto;
-import com.web.bookstorebackend.dto.ResponseDto;
+import com.web.bookstorebackend.dto.*;
 import com.web.bookstorebackend.model.Book;
 import com.web.bookstorebackend.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -19,6 +19,15 @@ public class BookController {
     private BookService bookService;
 
     @GetMapping
+    public ResponseEntity<Object> getAllActiveBooks(@RequestParam String keyword) {
+        try {
+            return ResponseEntity.ok(bookService.getAllActiveBooks(keyword));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
+        }
+    }
+
+    @GetMapping("/all")
     public ResponseEntity<Object> getAllBooks(@RequestParam String keyword) {
         try {
             return ResponseEntity.ok(bookService.getAllBooks(keyword));
@@ -47,13 +56,41 @@ public class BookController {
         }
     }
 
-
-
-    // 仅供测试用
-    @PostMapping
-    public ResponseEntity<Object> createBook(@RequestBody Book book) {
+    @PostMapping("/{id}/cover")
+    public ResponseEntity<Object> updateCover(@PathVariable Integer id,
+                                              @RequestParam("cover") MultipartFile file) {
         try {
-            return ResponseEntity.ok(bookService.createBook(book));
+            String base64Avatar = Base64.getEncoder().encodeToString(file.getBytes());
+            base64Avatar = "data:image/png;base64," + base64Avatar;
+
+            return ResponseEntity.ok(bookService.updateCover(id, base64Avatar));
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<Object> createBook(@RequestBody CreateBookDto createBookDto) {
+        try {
+            return ResponseEntity.ok(bookService.createBook(createBookDto));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateBook(@PathVariable Integer id, @RequestBody EditBookDto editBookDto) {
+        try {
+            return ResponseEntity.ok(bookService.updateBook(id, editBookDto));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}/hide")
+    public ResponseEntity<Object> changeBookHide(@PathVariable Integer id) {
+        try {
+            return ResponseEntity.ok(bookService.changeBookHide(id));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
         }

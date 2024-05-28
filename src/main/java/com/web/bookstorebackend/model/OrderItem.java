@@ -16,6 +16,7 @@ public class OrderItem {
     private int userId;
 
     @ManyToOne
+    @JoinColumn(name = "book_id")
     private Book book;
 
     private int price;

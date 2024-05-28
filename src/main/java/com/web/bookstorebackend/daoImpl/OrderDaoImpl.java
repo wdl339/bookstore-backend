@@ -22,8 +22,16 @@ public class OrderDaoImpl implements OrderDao {
         return orderRepository.findAllByUserIdOrderByCreateAtDesc(userId);
     }
 
+    public List<Order> findAllOrders() {
+        return orderRepository.findAllByOrderByCreateAtDesc();
+    }
+
     public List<Order> findOrdersByUserIdAndKeyword(@Param("userId") Integer userId, @Param("keyword") String keyword) {
         return orderRepository.findAllByUserIdAndKeyword(userId, keyword);
+    }
+
+    public List<Order> findOrdersByKeyword(@Param("keyword") String keyword) {
+        return orderRepository.findAllByKeyword(keyword);
     }
 
     public void addOrder(Order order) {

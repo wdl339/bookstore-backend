@@ -9,6 +9,8 @@ import com.web.bookstorebackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class UserDaoImpl implements UserDao {
 
@@ -24,6 +26,14 @@ public class UserDaoImpl implements UserDao {
 
     public void saveUserAuth(UserAuth userAuth) {
         userAuthRepository.save(userAuth);
+    }
+
+    public List<User> findAllUsers(){
+        return userRepository.findAll();
+    }
+
+    public List<User> findAllUsersByNameContaining(String keyword){
+        return userRepository.findAllByNameContaining(keyword);
     }
 
     public User findUserByName(String name){

@@ -126,4 +126,12 @@ public class UserServiceImpl implements UserService {
                 });
         return result;
     }
+
+    public List<User> getAllUsers(String keyword){
+        if (Objects.equals(keyword, "")){
+            return userDao.findAllUsers();
+        } else {
+            return userDao.findAllUsersByNameContaining(keyword);
+        }
+    }
 }

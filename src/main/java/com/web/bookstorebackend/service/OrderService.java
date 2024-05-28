@@ -12,6 +12,8 @@ import java.util.List;
 public interface OrderService {
     List<Order> getOrders(int userId, String keyword);
 
+    List<Order> getAllOrders(int userId, String keyword);
+
     ResponseDto addOrderFromCart(AddOrderFromCartDto addOrderFromCartDto, int userId);
 
     ResponseDto addOrderFromBook(int bookId, AddOrderFromBookDto addOrderFromBookDto, int userId);

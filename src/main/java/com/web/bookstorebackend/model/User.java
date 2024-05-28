@@ -32,18 +32,18 @@ public class User {
 
     private String description;
 
+    private boolean isBan;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
     @JsonIgnore
     private UserAuth userAuth;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
     @JsonIgnore
     private List<Order> orders;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
     @JsonIgnore
     private List<OrderItem> orderItems;
 
@@ -57,6 +57,7 @@ public class User {
         this.level = level;
         this.description = description;
         this.userAuth = userAuth;
+        this.isBan = false;
     }
 
     public User() {

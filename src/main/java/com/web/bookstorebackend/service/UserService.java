@@ -17,4 +17,6 @@ public interface UserService {
     ResponseDto updateAvatar(int userId, String avatar);
 
     List<GetRankUserDto> getRankUsers(String startTime, String endTime, int topNumber);
+
+    List<User> getAllUsers(String keyword);
 }
