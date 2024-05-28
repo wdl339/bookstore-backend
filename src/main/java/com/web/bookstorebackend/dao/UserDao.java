@@ -20,11 +20,11 @@ public interface UserDao {
 
     User findUserById(int id);
 
-    UserAuth findUserAuthById(int id);
+    Boolean existsIdAndPassword(int id, String password);
 
     void updateUser(User user, EditProfileDto editProfileDto);
 
-    void changePassword(UserAuth userAuth, String newPassword);
+    void changePassword(int UserId, String newPassword);
 
     void updateBalance(User user, int subtract);
 

@@ -3,6 +3,7 @@ package com.web.bookstorebackend.controller;
 import com.web.bookstorebackend.dto.*;
 import com.web.bookstorebackend.model.User;
 import com.web.bookstorebackend.service.UserService;
+import com.web.bookstorebackend.util.SessionUtils;
 import com.web.bookstorebackend.util.TokenUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,8 +21,11 @@ import java.util.Map;
 @RequestMapping("/api/user")
 public class UserController {
 
+//    @Autowired
+//    private TokenUtil tokenUtil;
+
     @Autowired
-    private TokenUtil tokenUtil;
+    private SessionUtils sessionUtils;
 
     @Autowired
     private UserService userService;
@@ -41,12 +45,14 @@ public class UserController {
     public ResponseEntity<Object> login(@RequestBody LoginDto user,
                                         HttpServletResponse response){
         try {
-            String token = userService.login(user);
-            Cookie cookie = new Cookie("token", token);
-            cookie.setMaxAge(24 * 60 * 60);
-            cookie.setPath("/");
-            cookie.setSecure(true);
-            response.addCookie(cookie);
+//            String token = userService.login(user);
+//            Cookie cookie = new Cookie("token", token);
+//            cookie.setMaxAge(24 * 60 * 60);
+//            cookie.setPath("/");
+//            cookie.setSecure(true);
+//            response.addCookie(cookie);
+            User loginUser = userService.login(user);
+            sessionUtils.setSession(loginUser);
 
             return ResponseEntity.ok(new ResponseDto(true, "Login success"));
         } catch (Exception e){
@@ -57,10 +63,11 @@ public class UserController {
     @PutMapping("logout")
     public ResponseEntity<Object> logout(HttpServletResponse response){
         try {
-            Cookie cookie = new Cookie("token", "");
-            cookie.setMaxAge(0);
-            cookie.setPath("/");
-            response.addCookie(cookie);
+//            Cookie cookie = new Cookie("token", "");
+//            cookie.setMaxAge(0);
+//            cookie.setPath("/");
+//            response.addCookie(cookie);
+            sessionUtils.removeSession();
 
             return ResponseEntity.ok(new ResponseDto(true,"Logout success"));
         } catch (Exception e){
@@ -142,15 +149,4 @@ public class UserController {
         }
     }
 
-    // 仅供测试用
-    @PostMapping("/testToken")
-    public String testToken(HttpServletRequest request){
-        try {
-            String token = request.getHeader("token");
-            tokenUtil.parseToken(token);
-            return "Token is valid";
-        } catch (Exception e){
-            return e.getMessage();
-        }
-    }
 }

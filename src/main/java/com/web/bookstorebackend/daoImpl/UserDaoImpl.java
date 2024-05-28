@@ -44,8 +44,8 @@ public class UserDaoImpl implements UserDao {
         return userRepository.findById(id).orElse(null);
     }
 
-    public UserAuth findUserAuthById(int id){
-        return userAuthRepository.findById(id).orElse(null);
+    public Boolean existsIdAndPassword(int id, String password){
+        return userAuthRepository.existsByIdAndPassword(id, password);
     }
 
     public void updateUser(User user, EditProfileDto editProfileDto) {
@@ -57,7 +57,9 @@ public class UserDaoImpl implements UserDao {
         userRepository.save(user);
     }
 
-    public void changePassword(UserAuth userAuth, String newPassword) {
+    public void changePassword(int userId, String newPassword) {
+        UserAuth userAuth = userAuthRepository.findById(userId).orElse(null);
+        assert userAuth != null;
         userAuth.setPassword(newPassword);
         userAuthRepository.save(userAuth);
     }

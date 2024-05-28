@@ -41,22 +41,15 @@ public class UserServiceImpl implements UserService {
         userDao.saveUser(user);
     }
 
-    public String login(LoginDto userInfo){
-
+    public User login(LoginDto userInfo){
         User user = userDao.findUserByName(userInfo.username);
-
         if (user == null){
             throw new RuntimeException("Invalid username");
         }
-
-        if (!user.getUserAuth().getPassword().equals(userInfo.password)){
+        if (!userDao.existsIdAndPassword(user.getId(), userInfo.password)){
             throw new RuntimeException("Invalid password");
         }
-
-        String userId = String.valueOf(user.getId());
-
-        String role = "ROLE_ADMIN";
-        return tokenUtil.getToken(userId, role);
+        return user;
     }
 
     public User getUserById(int id){
@@ -64,15 +57,11 @@ public class UserServiceImpl implements UserService {
     }
 
     public ResponseDto changePassword(int userId, ChangePasswordDto changePasswordDto){
-        UserAuth userAuth = userDao.findUserAuthById(userId);
-        if (userAuth == null){
-            return new ResponseDto(false, "User not found");
-        }
-        if (!userAuth.getPassword().equals(changePasswordDto.getOldPassword())){
+        if (!userDao.existsIdAndPassword(userId, changePasswordDto.getOldPassword())){
             return new ResponseDto(false, "Old password is incorrect");
         }
 
-        userDao.changePassword(userAuth, changePasswordDto.getNewPassword());
+        userDao.changePassword(userId, changePasswordDto.getNewPassword());
         return new ResponseDto(true, "Password changed successfully");
     }
 
@@ -134,4 +123,22 @@ public class UserServiceImpl implements UserService {
             return userDao.findAllUsersByNameContaining(keyword);
         }
     }
+
+    //    public String login(LoginDto userInfo){
+//
+//        User user = userDao.findUserByName(userInfo.username);
+//
+//        if (user == null){
+//            throw new RuntimeException("Invalid username");
+//        }
+//
+//        if (!user.getUserAuth().getPassword().equals(userInfo.password)){
+//            throw new RuntimeException("Invalid password");
+//        }
+//
+//        String userId = String.valueOf(user.getId());
+//
+//        String role = "ROLE_ADMIN";
+//        return tokenUtil.getToken(userId, role);
+//    }
 }
