@@ -1,6 +1,7 @@
 package com.web.bookstorebackend.dao;
 
 import com.web.bookstorebackend.model.Order;
+import com.web.bookstorebackend.model.OrderItem;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.Instant;
@@ -16,7 +17,9 @@ public interface OrderDao {
 
     List<Order> findOrdersByKeyword(@Param("keyword") String keyword);
 
-    void addOrder(Order order);
+    int addOrder(Order order);
+
+    void setOrderItems(int orderId, List<OrderItem> orderItems);
 
     List<Order> findOrdersByCreateTimeBetween(@Param("startTime") Instant startTime, @Param("endTime") Instant endTime);
 

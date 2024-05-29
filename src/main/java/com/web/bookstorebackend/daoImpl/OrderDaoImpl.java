@@ -34,7 +34,17 @@ public class OrderDaoImpl implements OrderDao {
         return orderRepository.findAllByKeyword(keyword);
     }
 
-    public void addOrder(Order order) {
+    public int addOrder(Order order) {
+        orderRepository.save(order);
+        return order.getId();
+    }
+
+    public void setOrderItems(int orderId, List<OrderItem> orderItems){
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if(order == null){
+            return;
+        }
+        order.setItems(orderItems);
         orderRepository.save(order);
     }
 

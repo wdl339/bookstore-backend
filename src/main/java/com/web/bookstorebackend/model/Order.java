@@ -18,6 +18,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "user_id")
     private int userId;
 
     private Instant createAt;
@@ -31,25 +32,24 @@ public class Order {
     private int totalPrice;
 
     @OneToMany(cascade = CascadeType.ALL,  fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
     private List<OrderItem> items;
 
-    public Order(AddOrderFromCartDto addOrderFromCartDto, List<OrderItem> items, int userId, int totalPrice) {
+    public Order(AddOrderFromCartDto addOrderFromCartDto, int userId, int totalPrice) {
         this.createAt = Instant.now();
         this.receiver = addOrderFromCartDto.getReceiver();
         this.address = addOrderFromCartDto.getAddress();
         this.phone = addOrderFromCartDto.getPhone();
         this.totalPrice = totalPrice;
-        this.items = items;
         this.userId = userId;
     }
 
-    public Order(AddOrderFromBookDto addOrderFromBookDto, OrderItem orderItem, int userId, int totalPrice) {
+    public Order(AddOrderFromBookDto addOrderFromBookDto, int userId, int totalPrice) {
         this.createAt = Instant.now();
         this.receiver = addOrderFromBookDto.getReceiver();
         this.address = addOrderFromBookDto.getAddress();
         this.phone = addOrderFromBookDto.getPhone();
         this.totalPrice = totalPrice;
-        this.items = List.of(orderItem);
         this.userId = userId;
     }
 

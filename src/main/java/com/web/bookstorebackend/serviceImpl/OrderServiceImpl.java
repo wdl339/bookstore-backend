@@ -1,14 +1,8 @@
 package com.web.bookstorebackend.serviceImpl;
 
-import com.web.bookstorebackend.dao.BookDao;
-import com.web.bookstorebackend.dao.OrderDao;
-import com.web.bookstorebackend.dao.OrderItemDao;
-import com.web.bookstorebackend.dao.UserDao;
+import com.web.bookstorebackend.dao.*;
 import com.web.bookstorebackend.dto.*;
-import com.web.bookstorebackend.model.Book;
-import com.web.bookstorebackend.model.Order;
-import com.web.bookstorebackend.model.OrderItem;
-import com.web.bookstorebackend.model.User;
+import com.web.bookstorebackend.model.*;
 import com.web.bookstorebackend.service.CartService;
 import com.web.bookstorebackend.service.OrderService;
 import jakarta.transaction.Transactional;
@@ -26,6 +20,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderItemDao orderItemDao;
+
+    @Autowired
+    private CartItemDao cartItemDao;
 
     @Autowired
     private BookDao bookDao;
@@ -54,53 +51,58 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     public ResponseDto addOrderFromCart(AddOrderFromCartDto addOrderFromCartDto, int userId) {
-        List<Integer> orderIds = addOrderFromCartDto.getItemIds();
-        List<OrderItem> orderItems = orderItemDao.findByItemIds(orderIds);
+        List<Integer> cartIds = addOrderFromCartDto.getItemIds();
+        List<CartItem> cartItems = cartItemDao.findByItemIds(cartIds);
 
-        if (orderItems.isEmpty()) {
-            throw new IllegalArgumentException("No items in the order");
+        if (cartItems.isEmpty()) {
+            throw new IllegalArgumentException("No items in the cart");
         }
-        if (orderItems.size() != addOrderFromCartDto.getItemIds().size()) {
-            throw new IllegalArgumentException("Some items are not in the order");
+        if (cartItems.size() != addOrderFromCartDto.getItemIds().size()) {
+            throw new IllegalArgumentException("Some items are not in the cart");
         }
-        for (OrderItem orderItem : orderItems) {
-            if (orderItem.getUserId() != userId) {
+        for (CartItem cartItem : cartItems) {
+            if (cartItem.getUserId() != userId) {
                 throw new IllegalArgumentException("Some items are not in user's cart");
             }
-            System.out.println(orderItem.getBook().isActive());
-            if (!(orderItem.getBook().isActive())) {
-                throw new IllegalArgumentException("Book " + orderItem.getBook().getTitle() + " is off the shelf");
+            if (!(cartItem.getBook().isActive())) {
+                throw new IllegalArgumentException("Book " + cartItem.getBook().getTitle() + " is off the shelf");
             }
         }
 
         // 虽然加入购物车时会检查库存是否够，但仍然可能出现加入购物车后才出现库存不够的情况
-        for (int i = 0; i < orderItems.size(); i++) {
-            OrderItem orderItem = orderItems.get(i);
-            Book book = orderItem.getBook();
-            int stock = book.getStock();
-            int number = orderItem.getNumber();
-            if (stock < number) {
-                throw new IllegalArgumentException("Book " + book.getTitle() + " is out of stock");
-            }
+        for (int i = 0; i < cartItems.size(); i++) {
+            CartItem cartItem = cartItems.get(i);
+            Book book = cartItem.getBook();
+            checkStock(cartItem, book);
         }
 
-        int totalPrice = orderItems.stream().mapToInt(item -> item.getBook().getPrice() * item.getNumber()).sum();
+        int totalPrice = cartItems.stream().mapToInt(item -> item.getBook().getPrice() * item.getNumber()).sum();
         User user = userDao.findUserById(userId);
-        if (user.getBalance() < totalPrice) {
-            throw new IllegalArgumentException("Not enough balance");
-        }
+        checkBalance(user, totalPrice);
 
-        for (int i = 0; i < orderItems.size(); i++) {
-            OrderItem orderItem = orderItems.get(i);
-            Book book = orderItem.getBook();
-            int number = orderItem.getNumber();
+        for (int i = 0; i < cartItems.size(); i++) {
+            CartItem cartItem = cartItems.get(i);
+            Book book = cartItem.getBook();
+            int number = cartItem.getNumber();
             bookDao.updateStockAndSales(book, number);
         }
 
         userDao.updateBalance(user, totalPrice);
-        orderItemDao.updateOrderItemsStatus(orderItems);
-        Order order = new Order(addOrderFromCartDto, orderItems, userId, totalPrice);
-        orderDao.addOrder(order);
+
+        Order order = new Order(addOrderFromCartDto, userId, totalPrice);
+        int orderId = orderDao.addOrder(order);
+
+        List<OrderItem> orderItems = new ArrayList<>();
+        for (int i = 0; i < cartItems.size(); i++) {
+            CartItem cartItem = cartItems.get(i);
+            OrderItem orderItem = new OrderItem(cartItem, orderId);
+            orderItems.add(orderItem);
+        }
+
+        orderItemDao.addOrderItems(orderItems);
+        orderDao.setOrderItems(orderId, orderItems);
+        cartItemDao.deleteItems(cartItems);
+
         return new ResponseDto(true, "Order added successfully");
     }
 
@@ -108,27 +110,28 @@ public class OrderServiceImpl implements OrderService {
     public ResponseDto addOrderFromBook(int bookId, AddOrderFromBookDto addOrderFromBookDto, int userId) {
         AddToCartDto addToCartDto = new AddToCartDto(bookId, addOrderFromBookDto.getNumber());
         int itemId = cartService.addToCart(addToCartDto, userId);
-        OrderItem orderItem = orderItemDao.findById(itemId);
+        CartItem cartItem = cartItemDao.findById(itemId);
 
-        // 虽然加入购物车时会检查库存是否够，但仍然可能出现加入购物车后才出现库存不够的情况
-        Book book = orderItem.getBook();
-        int stock = book.getStock();
-        int number = orderItem.getNumber();
-        if (stock < number) {
-            throw new IllegalArgumentException("Book " + book.getTitle() + " is out of stock");
-        }
+        Book book = cartItem.getBook();
+        checkStock(cartItem, book);
 
-        int totalPrice = orderItem.getBook().getPrice() * orderItem.getNumber();
+        int totalPrice = cartItem.getBook().getPrice() * cartItem.getNumber();
         User user = userDao.findUserById(userId);
-        if (user.getBalance() < totalPrice) {
-            throw new IllegalArgumentException("Not enough balance");
-        }
+        checkBalance(user, totalPrice);
 
-        bookDao.updateStockAndSales(book, orderItem.getNumber());
+        bookDao.updateStockAndSales(book, cartItem.getNumber());
         userDao.updateBalance(user, totalPrice);
-        orderItemDao.updateOrderItemStatus(orderItem);
-        Order order = new Order(addOrderFromBookDto, orderItem, userId, totalPrice);
-        orderDao.addOrder(order);
+
+        Order order = new Order(addOrderFromBookDto, userId, totalPrice);
+        int orderId = orderDao.addOrder(order);
+
+        OrderItem orderItem = new OrderItem(cartItem, orderId);
+        orderItemDao.addOrderItem(orderItem);
+        List<OrderItem> orderItems = new ArrayList<>();
+        orderItems.add(orderItem);
+        orderDao.setOrderItems(orderId, orderItems);
+
+        cartItemDao.deleteItem(cartItem);
         return new ResponseDto(true, "Order added successfully");
     }
 
@@ -163,5 +166,19 @@ public class OrderServiceImpl implements OrderService {
             result.add(new GetBuyBookDto(book, price, number));
         }
         return result;
+    }
+
+    public void checkStock(CartItem cartItem, Book book) {
+        int stock = book.getStock();
+        int number = cartItem.getNumber();
+        if (stock < number) {
+            throw new IllegalArgumentException("Book " + book.getTitle() + " is out of stock");
+        }
+    }
+
+    public void checkBalance(User user, int totalPrice) {
+        if (user.getBalance() < totalPrice) {
+            throw new IllegalArgumentException("Not enough balance");
+        }
     }
 }

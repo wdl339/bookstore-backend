@@ -2,6 +2,7 @@ package com.web.bookstorebackend.controller;
 
 import com.web.bookstorebackend.dto.AddToCartDto;
 import com.web.bookstorebackend.dto.ResponseDto;
+import com.web.bookstorebackend.model.CartItem;
 import com.web.bookstorebackend.model.OrderItem;
 import com.web.bookstorebackend.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ public class CartController {
     private CartService cartService;
 
     @GetMapping
-    public List<OrderItem> getCart(@RequestParam String keyword,
-                                   @RequestAttribute("userId") Integer userId) {
+    public List<CartItem> getCart(@RequestParam String keyword,
+                                  @RequestAttribute("userId") Integer userId) {
         try {
             return cartService.getCart(userId, keyword);
         } catch (Exception e) {

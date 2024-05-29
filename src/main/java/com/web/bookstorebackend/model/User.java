@@ -40,12 +40,14 @@ public class User {
     private UserAuth userAuth;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     @JsonIgnore
     private List<Order> orders;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     @JsonIgnore
-    private List<OrderItem> orderItems;
+    private List<CartItem> cartItems;
 
     public User(String name, String email, String avatar, String phone, String address, int balance, int level, String description, UserAuth userAuth) {
         this.name = name;
