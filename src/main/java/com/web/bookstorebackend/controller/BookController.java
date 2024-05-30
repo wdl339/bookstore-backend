@@ -69,7 +69,7 @@ public class BookController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Object> createBook(@RequestBody CreateBookDto createBookDto) {
         try {
             return ResponseEntity.ok(bookService.createBook(createBookDto));
@@ -78,7 +78,7 @@ public class BookController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/edit/{id}")
     public ResponseEntity<Object> updateBook(@PathVariable Integer id, @RequestBody EditBookDto editBookDto) {
         try {
             return ResponseEntity.ok(bookService.updateBook(id, editBookDto));

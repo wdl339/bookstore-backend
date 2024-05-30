@@ -49,6 +49,9 @@ public class UserServiceImpl implements UserService {
         if (!userDao.existsIdAndPassword(user.getId(), userInfo.password)){
             throw new RuntimeException("Invalid password");
         }
+        if (user.isBan()){
+            throw new RuntimeException("Your account has been banned");
+        }
         return user;
     }
 
@@ -122,6 +125,17 @@ public class UserServiceImpl implements UserService {
         } else {
             return userDao.findAllUsersByNameContaining(keyword);
         }
+    }
+
+    public ResponseDto changeUserBan(int userId, boolean isBan){
+        User user = userDao.findUserById(userId);
+        if (user == null){
+            return new ResponseDto(false, "User not found");
+        }
+
+        user.setBan(isBan);
+        userDao.saveUser(user);
+        return new ResponseDto(true, "User ban changed successfully");
     }
 
     //    public String login(LoginDto userInfo){

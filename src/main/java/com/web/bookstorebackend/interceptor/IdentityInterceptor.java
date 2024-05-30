@@ -1,7 +1,5 @@
 package com.web.bookstorebackend.interceptor;
 
-import com.web.bookstorebackend.model.User;
-import com.web.bookstorebackend.service.UserService;
 import com.web.bookstorebackend.util.SessionUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,14 +10,10 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
-public class SessionInterceptor implements HandlerInterceptor {
+public class IdentityInterceptor implements HandlerInterceptor {
 
     @Autowired
     private SessionUtils sessionUtils;
-
-    @Autowired
-    private UserService userService;
-
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object object) {
@@ -30,22 +24,15 @@ public class SessionInterceptor implements HandlerInterceptor {
             }
 
             HttpSession session = request.getSession(false);
-            Integer userId = (Integer) session.getAttribute("userId");
-
-            if (userId == null) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            Integer level = (Integer) session.getAttribute("level");
+            if (level == null || level != 2) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 return false;
             } else {
-                User user = userService.getUserById(userId);
-                if (user == null || user.isBan()) {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    return false;
-                }
-                request.setAttribute("userId", userId);
                 return true;
             }
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }
     }

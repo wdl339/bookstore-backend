@@ -15,6 +15,7 @@ public class SessionUtils {
             HttpServletRequest request = servletRequestAttributes.getRequest();
             HttpSession session = request.getSession();
             session.setAttribute("userId", user.getId());
+            session.setAttribute("level", user.getLevel());
         }
     }
 
@@ -34,6 +35,7 @@ public class SessionUtils {
             HttpSession session = request.getSession(false);
             if (session != null) {
                 session.removeAttribute("userId");
+                session.removeAttribute("level");
             }
         }
     }

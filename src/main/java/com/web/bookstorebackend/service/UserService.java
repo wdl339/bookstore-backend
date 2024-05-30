@@ -19,4 +19,6 @@ public interface UserService {
     List<GetRankUserDto> getRankUsers(String startTime, String endTime, int topNumber);
 
     List<User> getAllUsers(String keyword);
+
+    ResponseDto changeUserBan(int userId, boolean isBan);
 }

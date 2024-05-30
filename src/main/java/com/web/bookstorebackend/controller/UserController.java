@@ -149,4 +149,31 @@ public class UserController {
         }
     }
 
+    @GetMapping("/isAdmin")
+    public ResponseEntity<Object> getAdmins(@RequestAttribute("userId") Integer userId){
+        try {
+            User user = userService.getUserById(userId);
+            Map<String, Boolean> isAdmin = new HashMap<>();
+            Boolean isAdminBool = (user.getLevel() == 2);
+            isAdmin.put("isAdmin", isAdminBool);
+            return ResponseEntity.ok(isAdmin);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}/ban")
+    public ResponseEntity<Object> changeBookHide(@RequestAttribute("userId") Integer userId,
+                                                 @PathVariable Integer id,
+                                                 @RequestBody boolean status){
+        try {
+            if (userId == id){
+                return ResponseEntity.badRequest().body(new ResponseDto(false, "You can't ban yourself"));
+            }
+            return ResponseEntity.ok(userService.changeUserBan(id, status));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
+        }
+    }
+
 }
