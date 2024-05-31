@@ -2,11 +2,14 @@ package com.web.bookstorebackend.daoImpl;
 
 import com.web.bookstorebackend.dao.BookDao;
 import com.web.bookstorebackend.dto.EditBookDto;
+import com.web.bookstorebackend.dto.GetBooksDto;
 import com.web.bookstorebackend.model.Book;
 import com.web.bookstorebackend.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Component
@@ -15,24 +18,40 @@ public class BookDaoImpl implements BookDao {
     @Autowired
     private BookRepository bookrepository;
 
-    public List<Book> findAll() {
+    public GetBooksDto findAll(Pageable pageable) {
 
-        return bookrepository.findAll();
+        Page<Book> bookPage = bookrepository.findAll(pageable);
+        List<Book> bookList = bookPage.getContent();
+        long total = bookPage.getTotalElements();
+
+        return new GetBooksDto(total, bookList);
     }
 
-    public List<Book> findAllActive() {
+    public GetBooksDto findAllActive(Pageable pageable) {
 
-        return bookrepository.findAllByActiveTrue();
+        Page<Book> bookPage = bookrepository.findAllByActiveTrue(pageable);
+        List<Book> bookList = bookPage.getContent();
+        long total = bookPage.getTotalElements();
+
+        return new GetBooksDto(total, bookList);
     }
 
-    public List<Book> findByTitleContaining(String keyword) {
+    public GetBooksDto findByTitleContaining(String keyword, Pageable pageable) {
 
-        return bookrepository.findByTitleContaining(keyword);
+        Page<Book> bookPage = bookrepository.findByTitleContaining(keyword, pageable);
+        List<Book> bookList = bookPage.getContent();
+        long total = bookPage.getTotalElements();
+
+        return new GetBooksDto(total, bookList);
     }
 
-    public List<Book> findActiveByTitleContaining(String keyword) {
+    public GetBooksDto findActiveByTitleContaining(String keyword, Pageable pageable) {
 
-        return bookrepository.findByActiveTrueAndTitleContaining(keyword);
+        Page<Book> bookPage = bookrepository.findByActiveTrueAndTitleContaining(keyword, pageable);
+        List<Book> bookList = bookPage.getContent();
+        long total = bookPage.getTotalElements();
+
+        return new GetBooksDto(total, bookList);
     }
 
     public Book findById(Integer id) {

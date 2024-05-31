@@ -2,11 +2,14 @@ package com.web.bookstorebackend.daoImpl;
 
 import com.web.bookstorebackend.dao.UserDao;
 import com.web.bookstorebackend.dto.EditProfileDto;
+import com.web.bookstorebackend.dto.GetUsersDto;
 import com.web.bookstorebackend.model.User;
 import com.web.bookstorebackend.model.UserAuth;
 import com.web.bookstorebackend.repository.UserAuthRepository;
 import com.web.bookstorebackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,12 +31,18 @@ public class UserDaoImpl implements UserDao {
         userAuthRepository.save(userAuth);
     }
 
-    public List<User> findAllUsers(){
-        return userRepository.findAll();
+    public GetUsersDto findAllUsers(Pageable pageable) {
+        Page<User> userPage = userRepository.findAll(pageable);
+        List<User> userList = userPage.getContent();
+        long total = userPage.getTotalElements();
+        return new GetUsersDto(total, userList);
     }
 
-    public List<User> findAllUsersByNameContaining(String keyword){
-        return userRepository.findAllByNameContaining(keyword);
+    public GetUsersDto findAllUsersByNameContaining(String keyword, Pageable pageable) {
+        Page<User> userPage = userRepository.findAllByNameContaining(keyword, pageable);
+        List<User> userList = userPage.getContent();
+        long total = userPage.getTotalElements();
+        return new GetUsersDto(total, userList);
     }
 
     public User findUserByName(String name){

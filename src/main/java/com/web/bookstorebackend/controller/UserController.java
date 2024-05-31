@@ -9,6 +9,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -141,9 +143,12 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Object> getAllUsers(@RequestParam String keyword){
+    public ResponseEntity<Object> getAllUsers(@RequestParam String keyword,
+                                                @RequestParam int pageIndex,
+                                                @RequestParam int pageSize){
         try {
-            return ResponseEntity.ok(userService.getAllUsers(keyword));
+            Pageable pageable = PageRequest.of(pageIndex, pageSize);
+            return ResponseEntity.ok(userService.getAllUsers(keyword, pageable));
         } catch (Exception e){
             return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
         }

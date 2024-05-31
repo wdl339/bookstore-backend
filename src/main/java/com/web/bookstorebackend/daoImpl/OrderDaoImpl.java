@@ -1,11 +1,14 @@
 package com.web.bookstorebackend.daoImpl;
 
 import com.web.bookstorebackend.dao.OrderDao;
+import com.web.bookstorebackend.dto.GetOrdersDto;
 import com.web.bookstorebackend.model.Order;
 import com.web.bookstorebackend.model.OrderItem;
 import com.web.bookstorebackend.repository.OrderRepository;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -18,20 +21,35 @@ public class OrderDaoImpl implements OrderDao {
     @Autowired
     private OrderRepository orderRepository;
 
-    public List<Order> findAllOrdersByUserId(Integer userId) {
-        return orderRepository.findAllByUserIdOrderByCreateAtDesc(userId);
+    public GetOrdersDto findAllOrdersByUserId(Integer userId, Pageable pageable) {
+        Page<Order> orderPage = orderRepository.findAllByUserIdOrderByCreateAtDesc(userId, pageable);
+        List<Order> orderList = orderPage.getContent();
+        long total = orderPage.getTotalElements();
+        return new GetOrdersDto(total, orderList);
     }
 
-    public List<Order> findAllOrders() {
-        return orderRepository.findAllByOrderByCreateAtDesc();
+    public GetOrdersDto findAllOrders(Pageable pageable) {
+        Page<Order> orderPage = orderRepository.findAllByOrderByCreateAtDesc(pageable);
+        List<Order> orderList = orderPage.getContent();
+        long total = orderPage.getTotalElements();
+        return new GetOrdersDto(total, orderList);
     }
 
-    public List<Order> findOrdersByUserIdAndKeyword(@Param("userId") Integer userId, @Param("keyword") String keyword) {
-        return orderRepository.findAllByUserIdAndKeyword(userId, keyword);
+    public GetOrdersDto findOrdersByUserIdAndKeyword(@Param("userId") Integer userId,
+                                                     @Param("keyword") String keyword,
+                                                     Pageable pageable) {
+        Page<Order> orderPage = orderRepository.findAllByUserIdAndKeyword(userId, keyword, pageable);
+        List<Order> orderList = orderPage.getContent();
+        long total = orderPage.getTotalElements();
+        return new GetOrdersDto(total, orderList);
     }
 
-    public List<Order> findOrdersByKeyword(@Param("keyword") String keyword) {
-        return orderRepository.findAllByKeyword(keyword);
+    public GetOrdersDto findOrdersByKeyword(@Param("keyword") String keyword,
+                                            Pageable pageable) {
+        Page<Order> orderPage = orderRepository.findAllByKeyword(keyword, pageable);
+        List<Order> orderList = orderPage.getContent();
+        long total = orderPage.getTotalElements();
+        return new GetOrdersDto(total, orderList);
     }
 
     public int addOrder(Order order) {

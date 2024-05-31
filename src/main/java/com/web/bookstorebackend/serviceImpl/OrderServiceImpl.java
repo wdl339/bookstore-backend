@@ -7,6 +7,7 @@ import com.web.bookstorebackend.service.CartService;
 import com.web.bookstorebackend.service.OrderService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -33,19 +34,19 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private CartService cartService;
 
-    public List<Order> getOrders(int userId, String keyword) {
+    public GetOrdersDto getOrders(int userId, String keyword, Pageable pageable) {
         if (Objects.equals(keyword, "")) {
-            return orderDao.findAllOrdersByUserId(userId);
+            return orderDao.findAllOrdersByUserId(userId, pageable);
         } else {
-            return orderDao.findOrdersByUserIdAndKeyword(userId, keyword);
+            return orderDao.findOrdersByUserIdAndKeyword(userId, keyword, pageable);
         }
     }
 
-    public List<Order> getAllOrders(int userId, String keyword) {
+    public GetOrdersDto getAllOrders(int userId, String keyword, Pageable pageable) {
         if (Objects.equals(keyword, "")) {
-            return orderDao.findAllOrders();
+            return orderDao.findAllOrders(pageable);
         } else {
-            return orderDao.findOrdersByKeyword(keyword);
+            return orderDao.findOrdersByKeyword(keyword, pageable);
         }
     }
 

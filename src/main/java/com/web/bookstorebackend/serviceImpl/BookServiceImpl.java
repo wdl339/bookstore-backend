@@ -2,7 +2,6 @@ package com.web.bookstorebackend.serviceImpl;
 
 import com.web.bookstorebackend.dao.BookDao;
 import com.web.bookstorebackend.dao.OrderDao;
-import com.web.bookstorebackend.dao.OrderItemDao;
 import com.web.bookstorebackend.dto.*;
 import com.web.bookstorebackend.model.Book;
 import com.web.bookstorebackend.model.Order;
@@ -11,6 +10,7 @@ import com.web.bookstorebackend.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.time.Instant;
 import java.util.*;
 
@@ -24,19 +24,19 @@ public class BookServiceImpl implements BookService {
     private OrderDao orderDao;
 
 
-    public GetBooksDto getAllBooks(String keyword) {
+    public GetBooksDto getAllBooks(String keyword, Pageable pageable) {
         if (Objects.equals(keyword, "")) {
-            return new GetBooksDto(bookDao.findAll());
+            return bookDao.findAll(pageable);
         } else {
-            return new GetBooksDto(bookDao.findByTitleContaining(keyword));
+            return bookDao.findByTitleContaining(keyword, pageable);
         }
     }
 
-    public GetBooksDto getAllActiveBooks(String keyword) {
+    public GetBooksDto getAllActiveBooks(String keyword, Pageable pageable) {
         if (Objects.equals(keyword, "")) {
-            return new GetBooksDto(bookDao.findAllActive());
+            return bookDao.findAllActive(pageable);
         } else {
-            return new GetBooksDto(bookDao.findActiveByTitleContaining(keyword));
+            return bookDao.findActiveByTitleContaining(keyword, pageable);
         }
     }
 

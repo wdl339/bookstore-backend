@@ -1,18 +1,20 @@
 package com.web.bookstorebackend.dao;
 
 import com.web.bookstorebackend.dto.EditBookDto;
+import com.web.bookstorebackend.dto.GetBooksDto;
 import com.web.bookstorebackend.model.Book;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface BookDao {
-    List<Book> findAll() ;
+    GetBooksDto findAll(Pageable pageable) ;
 
-    List<Book> findAllActive() ;
+    GetBooksDto findAllActive(Pageable pageable) ;
 
-    List<Book> findByTitleContaining(String keyword);
+    GetBooksDto findByTitleContaining(String keyword, Pageable pageable) ;
 
-    List<Book> findActiveByTitleContaining(String keyword) ;
+    GetBooksDto findActiveByTitleContaining(String keyword, Pageable pageable) ;
 
     Book findById(Integer id) ;
 

@@ -6,6 +6,8 @@ import com.web.bookstorebackend.dto.ResponseDto;
 import com.web.bookstorebackend.model.Order;
 import com.web.bookstorebackend.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,20 +22,26 @@ public class OrderController {
 
 
     @GetMapping
-    public List<Order> getOrders(@RequestParam String keyword,
-                                 @RequestAttribute("userId") Integer userId) {
+    public ResponseEntity<Object> getOrders(@RequestParam String keyword,
+                                 @RequestAttribute("userId") Integer userId,
+                                 @RequestParam int pageIndex,
+                                 @RequestParam int pageSize) {
         try {
-            return orderService.getOrders(userId, keyword);
+            Pageable pageable = PageRequest.of(pageIndex, pageSize);
+            return ResponseEntity.ok(orderService.getOrders(userId, keyword, pageable));
         } catch (Exception e) {
             return null;
         }
     }
 
     @GetMapping("/all")
-    public List<Order> getAllOrders(@RequestParam String keyword,
-                                 @RequestAttribute("userId") Integer userId) {
+    public ResponseEntity<Object> getAllOrders(@RequestParam String keyword,
+                                 @RequestAttribute("userId") Integer userId,
+                                    @RequestParam int pageIndex,
+                                    @RequestParam int pageSize) {
         try {
-            return orderService.getAllOrders(userId, keyword);
+            Pageable pageable = PageRequest.of(pageIndex, pageSize);
+            return ResponseEntity.ok(orderService.getAllOrders(userId, keyword, pageable));
         } catch (Exception e) {
             return null;
         }

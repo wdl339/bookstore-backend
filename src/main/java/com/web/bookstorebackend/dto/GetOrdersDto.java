@@ -1,17 +1,18 @@
 package com.web.bookstorebackend.dto;
 
 import com.web.bookstorebackend.model.Book;
+import com.web.bookstorebackend.model.Order;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class GetBooksDto {
+public class GetOrdersDto {
     private long total;
-    private List<Book> books;
+    private List<Order> orders;
 
-    public GetBooksDto(long total, List<Book> books) {
+    public GetOrdersDto(long total, List<Order> orders) {
         this.total = total;
-        this.books = books;
+        this.orders = orders;
     }
 }

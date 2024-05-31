@@ -10,6 +10,7 @@ import com.web.bookstorebackend.model.UserAuth;
 import com.web.bookstorebackend.service.UserService;
 import com.web.bookstorebackend.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -119,11 +120,11 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
-    public List<User> getAllUsers(String keyword){
+    public GetUsersDto getAllUsers(String keyword, Pageable pageable){
         if (Objects.equals(keyword, "")){
-            return userDao.findAllUsers();
+            return userDao.findAllUsers(pageable);
         } else {
-            return userDao.findAllUsersByNameContaining(keyword);
+            return userDao.findAllUsersByNameContaining(keyword, pageable);
         }
     }
 

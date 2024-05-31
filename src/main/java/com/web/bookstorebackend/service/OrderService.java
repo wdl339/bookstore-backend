@@ -1,18 +1,16 @@
 package com.web.bookstorebackend.service;
 
-import com.web.bookstorebackend.dto.AddOrderFromBookDto;
-import com.web.bookstorebackend.dto.AddOrderFromCartDto;
-import com.web.bookstorebackend.dto.GetBuyBookDto;
-import com.web.bookstorebackend.dto.ResponseDto;
+import com.web.bookstorebackend.dto.*;
 import com.web.bookstorebackend.model.Order;
+import org.springframework.data.domain.Pageable;
 
 
 import java.util.List;
 
 public interface OrderService {
-    List<Order> getOrders(int userId, String keyword);
+    GetOrdersDto getOrders(int userId, String keyword, Pageable pageable);
 
-    List<Order> getAllOrders(int userId, String keyword);
+    GetOrdersDto getAllOrders(int userId, String keyword, Pageable pageable);
 
     ResponseDto addOrderFromCart(AddOrderFromCartDto addOrderFromCartDto, int userId);
 

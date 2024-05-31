@@ -1,21 +1,23 @@
 package com.web.bookstorebackend.dao;
 
+import com.web.bookstorebackend.dto.GetOrdersDto;
 import com.web.bookstorebackend.model.Order;
 import com.web.bookstorebackend.model.OrderItem;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
 import java.util.List;
 
 public interface OrderDao {
 
-    List<Order> findAllOrdersByUserId(Integer userId);
+    GetOrdersDto findAllOrdersByUserId(Integer userId, Pageable pageable);
 
-    List<Order> findAllOrders();
+    GetOrdersDto findAllOrders(Pageable pageable);
 
-    List<Order> findOrdersByUserIdAndKeyword(@Param("userId") Integer userId, @Param("keyword") String keyword);
+    GetOrdersDto findOrdersByUserIdAndKeyword(@Param("userId") Integer userId, @Param("keyword") String keyword, Pageable pageable);
 
-    List<Order> findOrdersByKeyword(@Param("keyword") String keyword);
+    GetOrdersDto findOrdersByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
     int addOrder(Order order);
 
