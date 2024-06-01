@@ -14,14 +14,21 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
-    Page<Order> findAllByUserIdOrderByCreateAtDesc(Integer userId, Pageable pageable);
 
-    Page<Order> findAllByOrderByCreateAtDesc(Pageable pageable);
-    @Query("SELECT o FROM Order o JOIN o.items i WHERE o.userId = :userId AND i.book.title LIKE %:keyword% ORDER BY o.createAt DESC")
-    Page<Order> findAllByUserIdAndKeyword(@Param("userId") Integer userId, @Param("keyword") String keyword, Pageable pageable);
+    @Query("SELECT o FROM Order o JOIN o.items i WHERE o.userId = :userId AND i.book.title LIKE %:keyword% " +
+            "And o.createAt BETWEEN :startTime AND :endTime ORDER BY o.createAt DESC")
+    Page<Order> findAllByUserIdAndKeywordAndCreateAtBetween(@Param("userId") Integer userId,
+                                                            @Param("keyword") String keyword,
+                                                            @Param("startTime") Instant startTime,
+                                                            @Param("endTime") Instant endTime,
+                                                            Pageable pageable);
 
-    @Query("SELECT o FROM Order o JOIN o.items i WHERE i.book.title LIKE %:keyword% ORDER BY o.createAt DESC")
-    Page<Order> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
+    @Query("SELECT o FROM Order o JOIN o.items i WHERE i.book.title LIKE %:keyword% " +
+            "And o.createAt BETWEEN :startTime AND :endTime ORDER BY o.createAt DESC")
+    Page<Order> findAllByKeywordAndCreateAtBetween(@Param("keyword") String keyword,
+                                                    @Param("startTime") Instant startTime,
+                                                    @Param("endTime") Instant endTime,
+                                                    Pageable pageable);
 
     List<Order> findAllByCreateAtBetween(Instant startTime, Instant endTime);
 

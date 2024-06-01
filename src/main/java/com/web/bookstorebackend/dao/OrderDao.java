@@ -11,13 +11,11 @@ import java.util.List;
 
 public interface OrderDao {
 
-    GetOrdersDto findAllOrdersByUserId(Integer userId, Pageable pageable);
+    GetOrdersDto findOrdersByUserIdAndKeyword(@Param("userId") Integer userId, @Param("keyword") String keyword, Pageable pageable,
+                                              @Param("startTime") Instant startTime, @Param("endTime") Instant endTime);
 
-    GetOrdersDto findAllOrders(Pageable pageable);
-
-    GetOrdersDto findOrdersByUserIdAndKeyword(@Param("userId") Integer userId, @Param("keyword") String keyword, Pageable pageable);
-
-    GetOrdersDto findOrdersByKeyword(@Param("keyword") String keyword, Pageable pageable);
+    GetOrdersDto findOrdersByKeyword(@Param("keyword") String keyword, Pageable pageable,
+                                     @Param("startTime") Instant startTime, @Param("endTime") Instant endTime);
 
     int addOrder(Order order);
 
@@ -25,6 +23,7 @@ public interface OrderDao {
 
     List<Order> findOrdersByCreateTimeBetween(@Param("startTime") Instant startTime, @Param("endTime") Instant endTime);
 
-    List<Order> findOrdersByCreateTimeBetweenAndUserId(@Param("startTime") Instant startTime, @Param("endTime") Instant endTime, @Param("userId") Integer userId);
+    List<Order> findOrdersByCreateTimeBetweenAndUserId(@Param("startTime") Instant startTime, @Param("endTime") Instant endTime,
+                                                       @Param("userId") Integer userId);
 
 }

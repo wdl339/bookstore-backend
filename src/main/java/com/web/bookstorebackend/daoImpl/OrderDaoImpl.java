@@ -21,32 +21,22 @@ public class OrderDaoImpl implements OrderDao {
     @Autowired
     private OrderRepository orderRepository;
 
-    public GetOrdersDto findAllOrdersByUserId(Integer userId, Pageable pageable) {
-        Page<Order> orderPage = orderRepository.findAllByUserIdOrderByCreateAtDesc(userId, pageable);
-        List<Order> orderList = orderPage.getContent();
-        long total = orderPage.getTotalElements();
-        return new GetOrdersDto(total, orderList);
-    }
-
-    public GetOrdersDto findAllOrders(Pageable pageable) {
-        Page<Order> orderPage = orderRepository.findAllByOrderByCreateAtDesc(pageable);
-        List<Order> orderList = orderPage.getContent();
-        long total = orderPage.getTotalElements();
-        return new GetOrdersDto(total, orderList);
-    }
-
     public GetOrdersDto findOrdersByUserIdAndKeyword(@Param("userId") Integer userId,
                                                      @Param("keyword") String keyword,
-                                                     Pageable pageable) {
-        Page<Order> orderPage = orderRepository.findAllByUserIdAndKeyword(userId, keyword, pageable);
+                                                     Pageable pageable,
+                                                     @Param("startTime") Instant startTime,
+                                                     @Param("endTime") Instant endTime) {
+        Page<Order> orderPage = orderRepository.findAllByUserIdAndKeywordAndCreateAtBetween(userId, keyword, startTime, endTime, pageable);
         List<Order> orderList = orderPage.getContent();
         long total = orderPage.getTotalElements();
         return new GetOrdersDto(total, orderList);
     }
 
     public GetOrdersDto findOrdersByKeyword(@Param("keyword") String keyword,
-                                            Pageable pageable) {
-        Page<Order> orderPage = orderRepository.findAllByKeyword(keyword, pageable);
+                                            Pageable pageable,
+                                            @Param("startTime") Instant startTime,
+                                            @Param("endTime") Instant endTime) {
+        Page<Order> orderPage = orderRepository.findAllByKeywordAndCreateAtBetween(keyword, startTime, endTime, pageable);
         List<Order> orderList = orderPage.getContent();
         long total = orderPage.getTotalElements();
         return new GetOrdersDto(total, orderList);

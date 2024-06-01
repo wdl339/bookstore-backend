@@ -34,20 +34,18 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private CartService cartService;
 
-    public GetOrdersDto getOrders(int userId, String keyword, Pageable pageable) {
-        if (Objects.equals(keyword, "")) {
-            return orderDao.findAllOrdersByUserId(userId, pageable);
-        } else {
-            return orderDao.findOrdersByUserIdAndKeyword(userId, keyword, pageable);
-        }
+    public GetOrdersDto getOrders(int userId, String keyword, Pageable pageable,
+                                    String startTime, String endTime) {
+        Instant start = Objects.equals(startTime, "") ? Instant.EPOCH : Instant.parse(startTime + "Z");
+        Instant end = Objects.equals(endTime, "") ? Instant.now() : Instant.parse(endTime + "Z");
+        return orderDao.findOrdersByUserIdAndKeyword(userId, keyword, pageable, start, end);
     }
 
-    public GetOrdersDto getAllOrders(int userId, String keyword, Pageable pageable) {
-        if (Objects.equals(keyword, "")) {
-            return orderDao.findAllOrders(pageable);
-        } else {
-            return orderDao.findOrdersByKeyword(keyword, pageable);
-        }
+    public GetOrdersDto getAllOrders(int userId, String keyword, Pageable pageable,
+                                       String startTime, String endTime) {
+        Instant start = Objects.equals(startTime, "") ? Instant.EPOCH : Instant.parse(startTime + "Z");
+        Instant end = Objects.equals(endTime, "") ? Instant.now() : Instant.parse(endTime + "Z");
+        return orderDao.findOrdersByKeyword(keyword, pageable, start, end);
     }
 
     @Transactional

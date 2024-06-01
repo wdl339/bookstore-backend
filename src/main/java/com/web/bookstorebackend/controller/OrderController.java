@@ -25,10 +25,12 @@ public class OrderController {
     public ResponseEntity<Object> getOrders(@RequestParam String keyword,
                                  @RequestAttribute("userId") Integer userId,
                                  @RequestParam int pageIndex,
-                                 @RequestParam int pageSize) {
+                                 @RequestParam int pageSize,
+                                 @RequestParam String startTime,
+                                 @RequestParam String endTime) {
         try {
             Pageable pageable = PageRequest.of(pageIndex, pageSize);
-            return ResponseEntity.ok(orderService.getOrders(userId, keyword, pageable));
+            return ResponseEntity.ok(orderService.getOrders(userId, keyword, pageable, startTime, endTime));
         } catch (Exception e) {
             return null;
         }
@@ -38,10 +40,12 @@ public class OrderController {
     public ResponseEntity<Object> getAllOrders(@RequestParam String keyword,
                                  @RequestAttribute("userId") Integer userId,
                                     @RequestParam int pageIndex,
-                                    @RequestParam int pageSize) {
+                                    @RequestParam int pageSize,
+                                    @RequestParam String startTime,
+                                    @RequestParam String endTime) {
         try {
             Pageable pageable = PageRequest.of(pageIndex, pageSize);
-            return ResponseEntity.ok(orderService.getAllOrders(userId, keyword, pageable));
+            return ResponseEntity.ok(orderService.getAllOrders(userId, keyword, pageable, startTime, endTime));
         } catch (Exception e) {
             return null;
         }
