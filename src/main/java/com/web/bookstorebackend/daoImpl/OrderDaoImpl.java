@@ -28,7 +28,8 @@ public class OrderDaoImpl implements OrderDao {
                                                      @Param("endTime") Instant endTime) {
         Page<Order> orderPage = orderRepository.findAllByUserIdAndKeywordAndCreateAtBetween(userId, keyword, startTime, endTime, pageable);
         List<Order> orderList = orderPage.getContent();
-        long total = orderPage.getTotalElements();
+        List<Order> orderPageAll = orderRepository.findAllByUserIdAndKeywordAndCreateAtBetween2(userId, keyword, startTime, endTime);
+        long total = orderPageAll.size();
         return new GetOrdersDto(total, orderList);
     }
 
@@ -38,7 +39,8 @@ public class OrderDaoImpl implements OrderDao {
                                             @Param("endTime") Instant endTime) {
         Page<Order> orderPage = orderRepository.findAllByKeywordAndCreateAtBetween(keyword, startTime, endTime, pageable);
         List<Order> orderList = orderPage.getContent();
-        long total = orderPage.getTotalElements();
+        List<Order> orderPageAll = orderRepository.findAllByKeywordAndCreateAtBetween2(keyword, startTime, endTime);
+        long total = orderPageAll.size();
         return new GetOrdersDto(total, orderList);
     }
 

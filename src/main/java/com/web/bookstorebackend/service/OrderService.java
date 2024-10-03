@@ -12,9 +12,9 @@ public interface OrderService {
 
     GetOrdersDto getAllOrders(int userId, String keyword, Pageable pageable, String startTime, String endTime);
 
-    ResponseDto addOrderFromCart(AddOrderFromCartDto addOrderFromCartDto, int userId);
+    String addOrderFromCart(AddOrderFromCartDto addOrderFromCartDto, int userId);
 
-    ResponseDto addOrderFromBook(int bookId, AddOrderFromBookDto addOrderFromBookDto, int userId);
+    String addOrderFromBook(int bookId, AddOrderFromBookDto addOrderFromBookDto, int userId);
 
     List<GetBuyBookDto> getBuyBooks(String startTime, String endTime, int userId);
 }

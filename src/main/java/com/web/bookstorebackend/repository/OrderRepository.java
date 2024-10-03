@@ -22,6 +22,12 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
                                                             @Param("startTime") Instant startTime,
                                                             @Param("endTime") Instant endTime,
                                                             Pageable pageable);
+    @Query("SELECT o FROM Order o JOIN o.items i WHERE o.userId = :userId AND i.book.title LIKE %:keyword% " +
+            "And o.createAt BETWEEN :startTime AND :endTime ORDER BY o.createAt DESC")
+    List<Order> findAllByUserIdAndKeywordAndCreateAtBetween2(@Param("userId") Integer userId,
+                                                            @Param("keyword") String keyword,
+                                                            @Param("startTime") Instant startTime,
+                                                            @Param("endTime") Instant endTime);
 
     @Query("SELECT o FROM Order o JOIN o.items i WHERE i.book.title LIKE %:keyword% " +
             "And o.createAt BETWEEN :startTime AND :endTime ORDER BY o.createAt DESC")
@@ -29,6 +35,12 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
                                                     @Param("startTime") Instant startTime,
                                                     @Param("endTime") Instant endTime,
                                                     Pageable pageable);
+
+    @Query("SELECT o FROM Order o JOIN o.items i WHERE i.book.title LIKE %:keyword% " +
+            "And o.createAt BETWEEN :startTime AND :endTime ORDER BY o.createAt DESC")
+    List<Order> findAllByKeywordAndCreateAtBetween2(@Param("keyword") String keyword,
+                                                   @Param("startTime") Instant startTime,
+                                                   @Param("endTime") Instant endTime);
 
     List<Order> findAllByCreateAtBetween(Instant startTime, Instant endTime);
 

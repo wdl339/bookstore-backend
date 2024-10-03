@@ -1,5 +1,6 @@
 package com.web.bookstorebackend.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.bookstorebackend.dto.AddOrderFromBookDto;
 import com.web.bookstorebackend.dto.AddOrderFromCartDto;
 import com.web.bookstorebackend.dto.ResponseDto;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +22,8 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @GetMapping
     public ResponseEntity<Object> getOrders(@RequestParam String keyword,
@@ -55,7 +59,10 @@ public class OrderController {
     public ResponseEntity<Object> addOrderFromCart(@RequestBody AddOrderFromCartDto addOrderFromCartDto,
                                            @RequestAttribute("userId") Integer userId) {
         try {
-            return ResponseEntity.ok(orderService.addOrderFromCart(addOrderFromCartDto, userId));
+            ObjectMapper objectMapper = new ObjectMapper();
+            String json = objectMapper.writeValueAsString(addOrderFromCartDto);
+            kafkaTemplate.send("order", userId.toString(), "cart:" + json);
+            return ResponseEntity.ok(new ResponseDto(true, "Order success"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
         }
@@ -66,7 +73,10 @@ public class OrderController {
                                            @RequestBody AddOrderFromBookDto addOrderFromBookDto,
                                            @RequestAttribute("userId") Integer userId) {
         try {
-            return ResponseEntity.ok(orderService.addOrderFromBook(bookId, addOrderFromBookDto, userId));
+            ObjectMapper objectMapper = new ObjectMapper();
+            String json = objectMapper.writeValueAsString(addOrderFromBookDto);
+            kafkaTemplate.send("order", userId.toString() + ":" + bookId.toString(), "book:" + json);
+            return ResponseEntity.ok(new ResponseDto(true, "Order success"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
         }

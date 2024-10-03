@@ -16,9 +16,6 @@ public class OrderItem {
     @Column(name = "order_id")
     private int orderId;
 
-    @Column(name = "user_id")
-    private int userId;
-
     @ManyToOne
     @JoinColumn(name = "book_id")
     private Book book;
@@ -28,8 +25,7 @@ public class OrderItem {
     private int number;
 
 
-    public OrderItem(Book book, int number, int orderId, int userId) {
-        this.userId = userId;
+    public OrderItem(Book book, int number, int orderId) {
         this.orderId = orderId;
         this.book = book;
         this.number = number;
@@ -37,7 +33,6 @@ public class OrderItem {
     }
 
     public OrderItem(CartItem cartItem, int orderId) {
-        this.userId = cartItem.getUserId();
         this.orderId = orderId;
         this.book = cartItem.getBook();
         this.number = cartItem.getNumber();

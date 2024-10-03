@@ -30,6 +30,7 @@ public class User {
 
     private int level;
 
+    @Column(length = 1000)
     private String description;
 
     private boolean isBan;
@@ -41,12 +42,12 @@ public class User {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonIgnore
+//    @JsonIgnore
     private List<Order> orders;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonIgnore
+//    @JsonIgnore
     private List<CartItem> cartItems;
 
     public User(String name, String email, String avatar, String phone, String address, int balance, int level, String description, UserAuth userAuth) {

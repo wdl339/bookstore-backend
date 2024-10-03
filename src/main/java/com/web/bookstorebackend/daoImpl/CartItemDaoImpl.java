@@ -2,16 +2,14 @@ package com.web.bookstorebackend.daoImpl;
 
 import com.web.bookstorebackend.dao.CartItemDao;
 import com.web.bookstorebackend.model.CartItem;
-import com.web.bookstorebackend.model.OrderItem;
 import com.web.bookstorebackend.repository.CartItemRepository;
-import com.web.bookstorebackend.repository.OrderItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public class CartItemDaoImp implements CartItemDao {
+public class CartItemDaoImpl implements CartItemDao {
 
     @Autowired
     private CartItemRepository cartItemRepository;

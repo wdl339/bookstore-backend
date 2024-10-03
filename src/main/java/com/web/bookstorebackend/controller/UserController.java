@@ -3,11 +3,6 @@ package com.web.bookstorebackend.controller;
 import com.web.bookstorebackend.dto.*;
 import com.web.bookstorebackend.model.User;
 import com.web.bookstorebackend.service.UserService;
-import com.web.bookstorebackend.util.SessionUtils;
-import com.web.bookstorebackend.util.TokenUtil;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,12 +18,6 @@ import java.util.Map;
 @RequestMapping("/api/user")
 public class UserController {
 
-//    @Autowired
-//    private TokenUtil tokenUtil;
-
-    @Autowired
-    private SessionUtils sessionUtils;
-
     @Autowired
     private UserService userService;
 
@@ -38,40 +27,6 @@ public class UserController {
             System.out.println(info);
             userService.registerUser(info);
             return ResponseEntity.ok(new ResponseDto(true, "Register success"));
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
-        }
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody LoginDto user,
-                                        HttpServletResponse response){
-        try {
-//            String token = userService.login(user);
-//            Cookie cookie = new Cookie("token", token);
-//            cookie.setMaxAge(24 * 60 * 60);
-//            cookie.setPath("/");
-//            cookie.setSecure(true);
-//            response.addCookie(cookie);
-            User loginUser = userService.login(user);
-            sessionUtils.setSession(loginUser);
-
-            return ResponseEntity.ok(new ResponseDto(true, "Login success"));
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
-        }
-    }
-
-    @PutMapping("logout")
-    public ResponseEntity<Object> logout(HttpServletResponse response){
-        try {
-//            Cookie cookie = new Cookie("token", "");
-//            cookie.setMaxAge(0);
-//            cookie.setPath("/");
-//            response.addCookie(cookie);
-            sessionUtils.removeSession();
-
-            return ResponseEntity.ok(new ResponseDto(true,"Logout success"));
         } catch (Exception e){
             return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
         }

@@ -1,3 +1,8 @@
+token:
+  secretKey: your_secret_key
+  refreshTime: 86400000
+  expiresTime: 3600000
+
 spring:
   application:
     name: bookstorebackend
@@ -10,8 +15,15 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: false
+  kafka:
+    bootstrap-servers: localhost:9092
+    listener:
+      missing-topics-fatal: false
+      #即使topic不存在，应用程序也可以正常启动
 
-token:
-  secretKey: your_secret_key
-  refreshTime: 86400000
-  expiresTime: 3600000
+#server:
+#  ssl:
+#    key-store: classpath:keystore.p12
+#    key-store-password: wdl339
+#    key-store-type: PKCS12
+#    key-alias: selfsigned_localhost_sslserver

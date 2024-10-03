@@ -49,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional
-    public ResponseDto addOrderFromCart(AddOrderFromCartDto addOrderFromCartDto, int userId) {
+    public String addOrderFromCart(AddOrderFromCartDto addOrderFromCartDto, int userId) {
         List<Integer> cartIds = addOrderFromCartDto.getItemIds();
         List<CartItem> cartItems = cartItemDao.findByItemIds(cartIds);
 
@@ -102,11 +102,11 @@ public class OrderServiceImpl implements OrderService {
         orderDao.setOrderItems(orderId, orderItems);
         cartItemDao.deleteItems(cartItems);
 
-        return new ResponseDto(true, "Order added successfully");
+        return "User " + userId + " adds order from cart successfully, order id: " + orderId;
     }
 
     @Transactional
-    public ResponseDto addOrderFromBook(int bookId, AddOrderFromBookDto addOrderFromBookDto, int userId) {
+    public String addOrderFromBook(int bookId, AddOrderFromBookDto addOrderFromBookDto, int userId) {
         AddToCartDto addToCartDto = new AddToCartDto(bookId, addOrderFromBookDto.getNumber());
         int itemId = cartService.addToCart(addToCartDto, userId);
         CartItem cartItem = cartItemDao.findById(itemId);
@@ -131,7 +131,7 @@ public class OrderServiceImpl implements OrderService {
         orderDao.setOrderItems(orderId, orderItems);
 
         cartItemDao.deleteItem(cartItem);
-        return new ResponseDto(true, "Order added successfully");
+        return "User " + userId + " adds order from book successfully, order id: " + orderId;
     }
 
     public List<GetBuyBookDto> getBuyBooks(String startTime, String endTime, int userId) {
