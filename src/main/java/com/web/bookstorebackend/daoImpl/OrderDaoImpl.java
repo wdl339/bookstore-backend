@@ -5,11 +5,13 @@ import com.web.bookstorebackend.dto.GetOrdersDto;
 import com.web.bookstorebackend.model.Order;
 import com.web.bookstorebackend.model.OrderItem;
 import com.web.bookstorebackend.repository.OrderRepository;
+import org.springframework.transaction.annotation.Transactional;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -44,11 +46,13 @@ public class OrderDaoImpl implements OrderDao {
         return new GetOrdersDto(total, orderList);
     }
 
+    @Transactional
     public int addOrder(Order order) {
         orderRepository.save(order);
         return order.getId();
     }
 
+    @Transactional
     public void setOrderItems(int orderId, List<OrderItem> orderItems){
         Order order = orderRepository.findById(orderId).orElse(null);
         if(order == null){

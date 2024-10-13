@@ -14,7 +14,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 @RestController
 @RequestMapping("/api/auth")
-//@Scope(value = "session")
 public class AuthController {
 
 //    @Autowired
@@ -43,8 +42,9 @@ public class AuthController {
             sessionUtils.setSession(loginUser);
             TimerService timerService = applicationContext.getBean(TimerService.class);
             timerService.startTimer();
+            String userId = String.valueOf(loginUser.getId());
 
-            return ResponseEntity.ok(new ResponseDto(true, "Login success"));
+            return ResponseEntity.ok(new ResponseDto(true, userId));
         } catch (Exception e){
             return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
         }

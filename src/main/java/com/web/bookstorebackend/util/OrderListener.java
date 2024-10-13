@@ -20,14 +20,18 @@ public class OrderListener {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
+    @Autowired
+    private WebSocketServer ws;
+
     @KafkaListener(topics = "order", groupId = "group_order")
     public void orderListener(ConsumerRecord<String, String> record) {
         String result;
+        int userId = 0;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             String message = record.value();
             String[] keys = record.key().split(":");
-            int userId = Integer.parseInt(keys[0]);
+            userId = Integer.parseInt(keys[0]);
             if (message.startsWith("cart:")) {
                 AddOrderFromCartDto addOrderFromCartDto = objectMapper.readValue(message.substring(5), AddOrderFromCartDto.class);
                 result = orderService.addOrderFromCart(addOrderFromCartDto, userId);
@@ -42,13 +46,14 @@ public class OrderListener {
             result = "Failed because of exception: " + e.getMessage();
         }
 
-        kafkaTemplate.send("order_finished", record.key(), result);
+        kafkaTemplate.send("order_finished", String.valueOf(userId), result);
     }
 
     @KafkaListener(topics = "order_finished", groupId = "group_order")
-    public void orderFinishedListener(ConsumerRecord<String, String> record) {
+    public void orderFinishedListener(ConsumerRecord<String, String> record) throws InterruptedException {
         String message = record.value();
         System.out.println(message);
+        ws.sendMessageToUser(record.key(), message);
     }
 
 }

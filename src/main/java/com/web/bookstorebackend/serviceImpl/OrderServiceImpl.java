@@ -5,7 +5,7 @@ import com.web.bookstorebackend.dto.*;
 import com.web.bookstorebackend.model.*;
 import com.web.bookstorebackend.service.CartService;
 import com.web.bookstorebackend.service.OrderService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -102,7 +102,7 @@ public class OrderServiceImpl implements OrderService {
         orderDao.setOrderItems(orderId, orderItems);
         cartItemDao.deleteItems(cartItems);
 
-        return "User " + userId + " adds order from cart successfully, order id: " + orderId;
+        return "Add order from cart successfully, order id: " + orderId;
     }
 
     @Transactional
@@ -131,7 +131,7 @@ public class OrderServiceImpl implements OrderService {
         orderDao.setOrderItems(orderId, orderItems);
 
         cartItemDao.deleteItem(cartItem);
-        return "User " + userId + " adds order from book successfully, order id: " + orderId;
+        return "Add order from book successfully, order id: " + orderId;
     }
 
     public List<GetBuyBookDto> getBuyBooks(String startTime, String endTime, int userId) {
