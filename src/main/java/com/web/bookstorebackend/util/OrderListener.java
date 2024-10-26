@@ -57,7 +57,3 @@ public class OrderListener {
     }
 
 }
-
-//zkServer.cmd
-//cd D:\kafka\kafka_2.13-3.8.0
-//.\bin\windows\kafka-server-start.bat .\config\server.properties

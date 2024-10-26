@@ -10,6 +10,9 @@ public class GetBooksDto {
     private long total;
     private List<Book> books;
 
+    public GetBooksDto() {
+    }
+
     public GetBooksDto(long total, List<Book> books) {
         this.total = total;
         this.books = books;

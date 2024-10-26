@@ -13,6 +13,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     Page<Book> findByTitleContaining(String keyword, Pageable pageable);
 
     Page<Book> findAllByActiveTrue(Pageable pageable);
+
     Page<Book> findByActiveTrueAndTitleContaining(String keyword, Pageable pageable);
 
 }

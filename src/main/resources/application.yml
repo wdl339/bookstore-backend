@@ -20,6 +20,13 @@ spring:
     listener:
       missing-topics-fatal: false
       #即使topic不存在，应用程序也可以正常启动
+  data:
+    redis:
+      database: 0
+      host: localhost
+      port: 6379
+      password:
+      timeout: 300
 
 #server:
 #  ssl:
@@ -27,3 +34,13 @@ spring:
 #    key-store-password: wdl339
 #    key-store-type: PKCS12
 #    key-alias: selfsigned_localhost_sslserver
+
+#  zkServer.cmd
+#
+#  cd D:\kafka\kafka_2.13-3.8.0
+#  .\bin\windows\kafka-server-start.bat .\config\server.properties
+#
+#  cd D:\Redis
+#  .\redis-server.exe .\redis.windows.conf
+#  .\redis-cli.exe flushall
+#  .\redis-cli.exe shutdown
