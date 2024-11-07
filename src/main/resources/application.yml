@@ -5,7 +5,7 @@ token:
 
 spring:
   application:
-    name: bookstorebackend
+    name: bookstore-backend
   datasource:
     url: jdbc:mysql://localhost:3306/bookstore
     username: root
@@ -27,6 +27,16 @@ spring:
       port: 6379
       password:
       timeout: 300
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    ip-address: localhost
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8040/eureka
 
 #server:
 #  ssl:

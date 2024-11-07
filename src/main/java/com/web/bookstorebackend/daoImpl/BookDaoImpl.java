@@ -29,30 +29,32 @@ public class BookDaoImpl implements BookDao {
 
         GetBooksDto getBooksDto;
         String p = null;
-        String totalStr = null;
         boolean redis_error = false;
 
         try {
-            p = redisTemplate.opsForValue().get("books_in_page" + pageable.getPageNumber());
-            totalStr = redisTemplate.opsForValue().get("books_total");
+            p = redisTemplate.opsForValue().get("books");
         } catch (Exception e) {
             System.out.println("redis error");
             redis_error = true;
         }
 
-        if (p == null || totalStr == null){
+        if (p == null){
             Page<Book> bookPage = bookrepository.findAll(pageable);
             List<Book> bookList = bookPage.getContent();
             long total = bookPage.getTotalElements();
             getBooksDto = new GetBooksDto(total, bookList);
             if (!redis_error){
-                redisTemplate.opsForValue().set("books_in_page" + pageable.getPageNumber(), JSON.toJSONString(bookList));
-                redisTemplate.opsForValue().set("books_total", String.valueOf(total));
+                List<Book> allBooks = bookrepository.findAll();
+                redisTemplate.opsForValue().set("books", JSON.toJSONString(allBooks));
             }
             System.out.println("get books from database");
         } else {
-            List<Book> books = JSONObject.parseArray(p, Book.class);
-            getBooksDto = new GetBooksDto(Long.parseLong(totalStr), books);
+            List<Book> allBooks = JSONObject.parseArray(p, Book.class);
+            // get the page from allBooks
+            int fromIndex = pageable.getPageNumber() * pageable.getPageSize();
+            int toIndex = Math.min(fromIndex + pageable.getPageSize(), allBooks.size());
+            List<Book> books = allBooks.subList(fromIndex, toIndex);
+            getBooksDto = new GetBooksDto((long) allBooks.size(), books);
             System.out.println("get books from redis");
         }
 
@@ -63,30 +65,108 @@ public class BookDaoImpl implements BookDao {
 
         GetBooksDto getBooksDto;
         String p = null;
-        String totalStr = null;
         boolean redis_error = false;
 
         try {
-            p = redisTemplate.opsForValue().get("activeBooks_in_page" + pageable.getPageNumber());
-            totalStr = redisTemplate.opsForValue().get("activeBooks_total");
+            p = redisTemplate.opsForValue().get("activeBooks");
         } catch (Exception e) {
             System.out.println("redis error");
             redis_error = true;
         }
 
-        if (p == null || totalStr == null){
+        if (p == null){
             Page<Book> bookPage = bookrepository.findAllByActiveTrue(pageable);
             List<Book> bookList = bookPage.getContent();
             long total = bookPage.getTotalElements();
             getBooksDto = new GetBooksDto(total, bookList);
             if (!redis_error){
-                redisTemplate.opsForValue().set("activeBooks_in_page" + pageable.getPageNumber(), JSON.toJSONString(bookList));
-                redisTemplate.opsForValue().set("activeBooks_total", String.valueOf(total));
+                List<Book> activeBooks = bookrepository.findAllByActiveTrue();
+                redisTemplate.opsForValue().set("activeBooks", JSON.toJSONString(activeBooks));
             }
             System.out.println("get active books from database");
         } else {
-            List<Book> books = JSONObject.parseArray(p, Book.class);
-            getBooksDto = new GetBooksDto(Long.parseLong(totalStr), books);
+            List<Book> activeBooks = JSONObject.parseArray(p, Book.class);
+            // get the page from activeBooks
+            int fromIndex = pageable.getPageNumber() * pageable.getPageSize();
+            int toIndex = Math.min(fromIndex + pageable.getPageSize(), activeBooks.size());
+            List<Book> books = activeBooks.subList(fromIndex, toIndex);
+            getBooksDto = new GetBooksDto((long) activeBooks.size(), books);
+            System.out.println("get active books from redis");
+        }
+
+        return getBooksDto;
+    }
+
+    public GetBooksDto findByTitleContaining(String keyword, Pageable pageable) {
+        GetBooksDto getBooksDto;
+        String p = null;
+        boolean redis_error = false;
+
+        try {
+            p = redisTemplate.opsForValue().get("books");
+        } catch (Exception e) {
+            System.out.println("redis error");
+            redis_error = true;
+        }
+
+        if (p == null){
+            Page<Book> bookPage = bookrepository.findByTitleContaining(keyword, pageable);
+            List<Book> bookList = bookPage.getContent();
+            long total = bookPage.getTotalElements();
+            getBooksDto = new GetBooksDto(total, bookList);
+            if (!redis_error){
+                List<Book> allBooks = bookrepository.findAll();
+                redisTemplate.opsForValue().set("books", JSON.toJSONString(allBooks));
+            }
+            System.out.println("get books from database");
+        } else {
+            List<Book> allBooks = JSONObject.parseArray(p, Book.class);
+            // get the book containing keyword in allBooks
+            List<Book> books = allBooks.stream()
+                    .filter(book -> book.getTitle().contains(keyword))
+                    .toList();
+            int fromIndex = pageable.getPageNumber() * pageable.getPageSize();
+            int toIndex = Math.min(fromIndex + pageable.getPageSize(), books.size());
+            List<Book> finalBooks = books.subList(fromIndex, toIndex);
+            getBooksDto = new GetBooksDto((long) books.size(), finalBooks);
+            System.out.println("get books from redis");
+        }
+
+        return getBooksDto;
+    }
+
+    public GetBooksDto findActiveByTitleContaining(String keyword, Pageable pageable) {
+        GetBooksDto getBooksDto;
+        String p = null;
+        boolean redis_error = false;
+
+        try {
+            p = redisTemplate.opsForValue().get("activeBooks");
+        } catch (Exception e) {
+            System.out.println("redis error");
+            redis_error = true;
+        }
+
+        if (p == null){
+            Page<Book> bookPage = bookrepository.findByActiveTrueAndTitleContaining(keyword, pageable);
+            List<Book> bookList = bookPage.getContent();
+            long total = bookPage.getTotalElements();
+            getBooksDto = new GetBooksDto(total, bookList);
+            if (!redis_error){
+                List<Book> activeBooks = bookrepository.findAllByActiveTrue();
+                redisTemplate.opsForValue().set("activeBooks", JSON.toJSONString(activeBooks));
+            }
+            System.out.println("get active books from database");
+        } else {
+            List<Book> activeBooks = JSONObject.parseArray(p, Book.class);
+            // get the book containing keyword in activeBooks
+            List<Book> books = activeBooks.stream()
+                    .filter(book -> book.getTitle().contains(keyword))
+                    .toList();
+            int fromIndex = pageable.getPageNumber() * pageable.getPageSize();
+            int toIndex = Math.min(fromIndex + pageable.getPageSize(), books.size());
+            List<Book> finalBooks = books.subList(fromIndex, toIndex);
+            getBooksDto = new GetBooksDto((long) books.size(), finalBooks);
             System.out.println("get active books from redis");
         }
 
@@ -130,7 +210,8 @@ public class BookDaoImpl implements BookDao {
         }
 
         if (p != null){
-            Objects.requireNonNull(redisTemplate.getConnectionFactory()).getConnection().flushDb();
+            redisTemplate.delete("books");
+            redisTemplate.delete("activeBooks");
             redisTemplate.opsForValue().set("book" + book.getId(), JSON.toJSONString(book));
         }
         bookrepository.save(book);
@@ -150,7 +231,7 @@ public class BookDaoImpl implements BookDao {
         }
 
         if (p != null){
-            Objects.requireNonNull(redisTemplate.getConnectionFactory()).getConnection().flushDb();
+            redisTemplate.delete("books");
             redisTemplate.opsForValue().set("book" + book.getId(), JSON.toJSONString(book));
         }
         bookrepository.save(book);
@@ -172,23 +253,10 @@ public class BookDaoImpl implements BookDao {
         }
 
         if (p != null){
-            Objects.requireNonNull(redisTemplate.getConnectionFactory()).getConnection().flushDb();
+            redisTemplate.delete("books");
+            redisTemplate.delete("activeBooks");
             redisTemplate.opsForValue().set("book" + book.getId(), JSON.toJSONString(book));
         }
         bookrepository.save(book);
-    }
-
-    public GetBooksDto findByTitleContaining(String keyword, Pageable pageable) {
-        Page<Book> bookPage = bookrepository.findByTitleContaining(keyword, pageable);
-        List<Book> bookList = bookPage.getContent();
-        long total = bookPage.getTotalElements();
-        return new GetBooksDto(total, bookList);
-    }
-
-    public GetBooksDto findActiveByTitleContaining(String keyword, Pageable pageable) {
-        Page<Book> bookPage = bookrepository.findByActiveTrueAndTitleContaining(keyword, pageable);
-        List<Book> bookList = bookPage.getContent();
-        long total = bookPage.getTotalElements();
-        return new GetBooksDto(total, bookList);
     }
 }

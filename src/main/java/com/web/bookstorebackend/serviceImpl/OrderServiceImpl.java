@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 import java.util.*;
@@ -33,6 +34,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     public GetOrdersDto getOrders(int userId, String keyword, Pageable pageable,
                                     String startTime, String endTime) {
@@ -75,7 +79,7 @@ public class OrderServiceImpl implements OrderService {
             checkStock(cartItem, book);
         }
 
-        int totalPrice = cartItems.stream().mapToInt(item -> item.getBook().getPrice() * item.getNumber()).sum();
+        int totalPrice = cartItems.stream().mapToInt(item -> getTotalPrice(item.getBook().getPrice(), item.getNumber())).sum();
         User user = userDao.findUserById(userId);
         checkBalance(user, totalPrice);
 
@@ -114,7 +118,8 @@ public class OrderServiceImpl implements OrderService {
         Book book = cartItem.getBook();
         checkStock(cartItem, book);
 
-        int totalPrice = cartItem.getBook().getPrice() * cartItem.getNumber();
+        int totalPrice = getTotalPrice(cartItem.getBook().getPrice(), cartItem.getNumber());
+        System.out.println("totalPrice: " + totalPrice);
         User user = userDao.findUserById(userId);
         checkBalance(user, totalPrice);
 
@@ -179,5 +184,17 @@ public class OrderServiceImpl implements OrderService {
         if (user.getBalance() < totalPrice) {
             throw new IllegalArgumentException("Not enough balance");
         }
+    }
+
+    private int getTotalPrice(Integer price, Integer number) {
+        Integer[] union = {price, number};
+        Integer[][] request = {union};
+        Integer[] response = restTemplate.postForObject(
+                "http://localhost:11230/totalPrice", request, Integer[].class);
+        if (response == null) {
+            System.out.println("Failed to get total price from book service");
+            return price * number;
+        }
+        return response[0];
     }
 }
