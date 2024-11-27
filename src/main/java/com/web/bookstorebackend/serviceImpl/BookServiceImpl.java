@@ -40,6 +40,16 @@ public class BookServiceImpl implements BookService {
         }
     }
 
+    public GetBooksDto getAllActiveBooksRelatedToTag(String tag, Pageable pageable) {
+        try {
+            return bookDao.findActiveRelatedToTag(tag, pageable);
+        } catch (Exception e) {
+            System.out.println("Error in getAllActiveBooksRelatedToTag");
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
     public Book getBookById(Integer id) {
         return bookDao.findById(id);
     }
@@ -47,8 +57,8 @@ public class BookServiceImpl implements BookService {
 
     public ResponseDto createBook(CreateBookDto createBookDto) {
         Book book = new Book(createBookDto.getTitle(), createBookDto.getAuthor(), createBookDto.getDescription(),
-                createBookDto.getIsbn(), createBookDto.getPrice(), createBookDto.getCover(),0, createBookDto.getStock(), true);
-        bookDao.save(book);
+                createBookDto.getIsbn(), createBookDto.getPrice(),0, createBookDto.getStock(), true);
+        bookDao.createBook(book, createBookDto.getCover());
         return new ResponseDto(true, "Book added successfully");
     }
 
@@ -83,13 +93,7 @@ public class BookServiceImpl implements BookService {
     }
 
     public ResponseDto updateCover(Integer id, String cover) {
-        Book book = bookDao.findById(id);
-        if (book == null) {
-            return new ResponseDto(false, "Book not found");
-        }
-
-        book.setCover(cover);
-        bookDao.save(book);
+        bookDao.updateCover(id, cover);
         return new ResponseDto(true, "Cover updated successfully");
     }
 
@@ -109,8 +113,7 @@ public class BookServiceImpl implements BookService {
             return new ResponseDto(false, "Book not found");
         }
 
-        book.setActive(!book.isActive());
-        bookDao.save(book);
+        bookDao.updateActive(book, !book.isActive());
         return new ResponseDto(true, "Book hide changed successfully");
     }
 }

@@ -16,11 +16,17 @@ public interface BookDao {
 
     GetBooksDto findActiveByTitleContaining(String keyword, Pageable pageable) ;
 
+    GetBooksDto findActiveRelatedToTag(String tag, Pageable pageable) ;
+
     Book findById(Integer id) ;
 
-    void save(Book book) ;
+    void createBook(Book book, String cover) ;
+
+    void updateCover(Integer id, String cover) ;
 
     void updateStockAndSales(Book book, Integer buyNumber) ;
 
     void updateBook(Book book, EditBookDto editBookDto) ;
+
+    void updateActive(Book book, Boolean active) ;
 }

@@ -187,14 +187,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private int getTotalPrice(Integer price, Integer number) {
-        Integer[] union = {price, number};
-        Integer[][] request = {union};
-        Integer[] response = restTemplate.postForObject(
-                "http://localhost:11230/totalPrice", request, Integer[].class);
-        if (response == null) {
-            System.out.println("Failed to get total price from book service");
-            return price * number;
-        }
-        return response[0];
+//        Integer[] union = {price, number};
+//        Integer[][] request = {union};
+//        Integer[] response = restTemplate.postForObject(
+//                "http://localhost:11230/totalPrice", request, Integer[].class);
+//        if (response == null) {
+//            System.out.println("Failed to get total price from book service");
+//            return price * number;
+//        }
+//        return response[0];
+        return price * number;
     }
 }

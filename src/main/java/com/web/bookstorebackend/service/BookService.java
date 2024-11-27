@@ -12,6 +12,8 @@ public interface BookService {
 
     GetBooksDto getAllActiveBooks(String keyword, Pageable pageable);
 
+    GetBooksDto getAllActiveBooksRelatedToTag(String tag, Pageable pageable);
+
     Book getBookById(Integer id);
 
     ResponseDto createBook(CreateBookDto createBookDto);

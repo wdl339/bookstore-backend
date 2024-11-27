@@ -2,8 +2,10 @@ package com.web.bookstorebackend.daoImpl;
 
 import com.web.bookstorebackend.dao.OrderDao;
 import com.web.bookstorebackend.dto.GetOrdersDto;
+import com.web.bookstorebackend.model.Book;
 import com.web.bookstorebackend.model.Order;
 import com.web.bookstorebackend.model.OrderItem;
+import com.web.bookstorebackend.repository.BookCoverRepository;
 import com.web.bookstorebackend.repository.OrderRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.apache.ibatis.annotations.Param;
@@ -22,6 +24,8 @@ public class OrderDaoImpl implements OrderDao {
 
     @Autowired
     private OrderRepository orderRepository;
+    @Autowired
+    private BookCoverRepository bookCoverRepository;
 
     public GetOrdersDto findOrdersByUserIdAndKeyword(@Param("userId") Integer userId,
                                                      @Param("keyword") String keyword,
@@ -31,8 +35,21 @@ public class OrderDaoImpl implements OrderDao {
         Page<Order> orderPage = orderRepository.findAllByUserIdAndKeywordAndCreateAtBetween(userId, keyword, startTime, endTime, pageable);
         List<Order> orderList = orderPage.getContent();
         List<Order> orderPageAll = orderRepository.findAllByUserIdAndKeywordAndCreateAtBetween2(userId, keyword, startTime, endTime);
+        List<Order> orderListWithCover = getCoverForOrderList(orderList);
         long total = orderPageAll.size();
-        return new GetOrdersDto(total, orderList);
+        return new GetOrdersDto(total, orderListWithCover);
+    }
+
+    private List<Order> getCoverForOrderList(List<Order> orderList) {
+        for (Order order : orderList) {
+            List<OrderItem> items = order.getItems();
+            for (OrderItem item : items) {
+                Book book = item.getBook();
+                bookCoverRepository.findById(book.getId()).ifPresent(bookCover -> book.setCover(bookCover.getCoverBase64()));
+                item.setBook(book);
+            }
+        }
+        return orderList;
     }
 
     public GetOrdersDto findOrdersByKeyword(@Param("keyword") String keyword,
@@ -42,8 +59,9 @@ public class OrderDaoImpl implements OrderDao {
         Page<Order> orderPage = orderRepository.findAllByKeywordAndCreateAtBetween(keyword, startTime, endTime, pageable);
         List<Order> orderList = orderPage.getContent();
         List<Order> orderPageAll = orderRepository.findAllByKeywordAndCreateAtBetween2(keyword, startTime, endTime);
+        List<Order> orderListWithCover = getCoverForOrderList(orderList);
         long total = orderPageAll.size();
-        return new GetOrdersDto(total, orderList);
+        return new GetOrdersDto(total, orderListWithCover);
     }
 
     @Transactional
@@ -63,10 +81,13 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     public List<Order> findOrdersByCreateTimeBetween(@Param("startTime") Instant startTime, @Param("endTime") Instant endTime){
-        return orderRepository.findAllByCreateAtBetween(startTime, endTime);
+
+        List<Order> orders = orderRepository.findAllByCreateAtBetween(startTime, endTime);
+        return getCoverForOrderList(orders);
     }
 
     public List<Order> findOrdersByCreateTimeBetweenAndUserId(@Param("startTime") Instant startTime, @Param("endTime") Instant endTime, @Param("userId") Integer userId){
-        return orderRepository.findAllByCreateAtBetweenAndUserId(startTime, endTime, userId);
+        List<Order> orders = orderRepository.findAllByCreateAtBetweenAndUserId(startTime, endTime, userId);
+        return getCoverForOrderList(orders);
     }
 }

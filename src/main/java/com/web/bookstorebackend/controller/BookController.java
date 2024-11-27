@@ -30,6 +30,18 @@ public class BookController {
         }
     }
 
+    @GetMapping("/tag")
+    public ResponseEntity<Object> getAllActiveBooksByTag(@RequestParam String tag,
+                                                    @RequestParam int pageIndex,
+                                                    @RequestParam int pageSize) {
+        try {
+            Pageable pageable = PageRequest.of(pageIndex, pageSize);
+            return ResponseEntity.ok(bookService.getAllActiveBooksRelatedToTag(tag, pageable));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
+        }
+    }
+
     @GetMapping("/all")
     public ResponseEntity<Object> getAllBooks(@RequestParam String keyword,
                                               @RequestParam int pageIndex,
