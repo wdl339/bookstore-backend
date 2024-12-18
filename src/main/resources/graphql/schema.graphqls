@@ -1,0 +1,23 @@
+type Query {
+    getAllActiveBooks(keyword: String, pageIndex: Int, pageSize: Int): GetBooksDto
+}
+
+type Book {
+    id: Int
+    title: String
+    author: String
+    description: String
+    isbn: String
+    price: Int
+    cover: String
+    sales: Int
+    stock: Int
+    active: Boolean
+    tag: String
+    tag2: String
+}
+
+type GetBooksDto {
+    total: Int
+    books: [Book]
+}

@@ -7,6 +7,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 
 import org.springframework.data.domain.Pageable;
 import java.util.Base64;
@@ -18,15 +20,15 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
-    @GetMapping
-    public ResponseEntity<Object> getAllActiveBooks(@RequestParam String keyword,
-                                                    @RequestParam int pageIndex,
-                                                    @RequestParam int pageSize) {
+    @QueryMapping
+    public GetBooksDto getAllActiveBooks(@Argument String keyword,
+                                                    @Argument int pageIndex,
+                                                    @Argument int pageSize) {
         try {
             Pageable pageable = PageRequest.of(pageIndex, pageSize);
-            return ResponseEntity.ok(bookService.getAllActiveBooks(keyword, pageable));
+            return bookService.getAllActiveBooks(keyword, pageable);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
+            return null;
         }
     }
 
