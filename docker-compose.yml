@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: wdl339
+      MYSQL_DATABASE: bookstore
+    ports:
+      - "3307:3306"
+    user: "999:999"
+#    volumes:
+#      - db_data
+
+  app:
+    build: .
+    container_name: bookstore-backend
+    environment:
+        MYSQL_HOST: db
+        MYSQL_PORT: 3306
+        MYSQL_DATABASE: bookstore
+        MYSQL_USER: root
+        MYSQL_PASSWORD: wdl339
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+#volumes:
+#  db_data:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: C:\ProgramData\MySQL\MySQL Server 8.3\Data\bookstore
+#      o: bind
+
+#  docker-compose up --build
