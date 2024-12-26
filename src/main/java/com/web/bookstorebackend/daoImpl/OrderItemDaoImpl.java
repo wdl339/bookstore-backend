@@ -11,18 +11,19 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
+//@Transactional("transactionManager")
 public class OrderItemDaoImpl implements OrderItemDao {
 
     @Autowired
     private OrderItemRepository orderItemRepository;
 
-    @Transactional
+    @Transactional("transactionManager")
     public void addOrderItem(OrderItem orderItem) {
 
         orderItemRepository.save(orderItem);
     }
 
-    @Transactional
+    @Transactional("transactionManager")
     public void addOrderItems(List<OrderItem> orderItems) {
         orderItemRepository.saveAll(orderItems);
     }

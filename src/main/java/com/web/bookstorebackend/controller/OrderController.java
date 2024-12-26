@@ -6,6 +6,7 @@ import com.web.bookstorebackend.dto.AddOrderFromCartDto;
 import com.web.bookstorebackend.dto.ResponseDto;
 import com.web.bookstorebackend.model.Order;
 import com.web.bookstorebackend.service.OrderService;
+import com.web.bookstorebackend.util.WebSocketServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +24,7 @@ public class OrderController {
     private OrderService orderService;
 
     @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
+    private WebSocketServer ws;
 
     @GetMapping
     public ResponseEntity<Object> getOrders(@RequestParam String keyword,
@@ -57,11 +58,9 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<Object> addOrderFromCart(@RequestBody AddOrderFromCartDto addOrderFromCartDto,
-                                           @RequestAttribute("userId") Integer userId) {
+                                           @RequestAttribute("userId") Integer userId) throws InterruptedException {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            String json = objectMapper.writeValueAsString(addOrderFromCartDto);
-            kafkaTemplate.send("order", userId.toString(), "cart:" + json);
+            orderService.addOrderFromCart(addOrderFromCartDto, userId);
             return ResponseEntity.ok(new ResponseDto(true, "Order success"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));
@@ -73,9 +72,7 @@ public class OrderController {
                                            @RequestBody AddOrderFromBookDto addOrderFromBookDto,
                                            @RequestAttribute("userId") Integer userId) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            String json = objectMapper.writeValueAsString(addOrderFromBookDto);
-            kafkaTemplate.send("order", userId.toString() + ":" + bookId.toString(), "book:" + json);
+            orderService.addOrderFromBook(bookId, addOrderFromBookDto, userId);
             return ResponseEntity.ok(new ResponseDto(true, "Order success"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseDto(false, e.getMessage()));

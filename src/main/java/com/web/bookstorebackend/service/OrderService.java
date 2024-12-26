@@ -12,9 +12,9 @@ public interface OrderService {
 
     GetOrdersDto getAllOrders(int userId, String keyword, Pageable pageable, String startTime, String endTime);
 
-    String addOrderFromCart(AddOrderFromCartDto addOrderFromCartDto, int userId);
+    String addOrderFromCart(AddOrderFromCartDto addOrderFromCartDto, int userId) throws InterruptedException;
 
-    String addOrderFromBook(int bookId, AddOrderFromBookDto addOrderFromBookDto, int userId);
+    String addOrderFromBook(int bookId, AddOrderFromBookDto addOrderFromBookDto, int userId) throws InterruptedException;
 
     List<GetBuyBookDto> getBuyBooks(String startTime, String endTime, int userId);
 }

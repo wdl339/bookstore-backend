@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+//@Transactional("transactionManager")
 public class OrderDaoImpl implements OrderDao {
 
     @Autowired
@@ -64,13 +65,13 @@ public class OrderDaoImpl implements OrderDao {
         return new GetOrdersDto(total, orderListWithCover);
     }
 
-    @Transactional
+    @Transactional("transactionManager")
     public int addOrder(Order order) {
         orderRepository.save(order);
         return order.getId();
     }
 
-    @Transactional
+    @Transactional("transactionManager")
     public void setOrderItems(int orderId, List<OrderItem> orderItems){
         Order order = orderRepository.findById(orderId).orElse(null);
         if(order == null){

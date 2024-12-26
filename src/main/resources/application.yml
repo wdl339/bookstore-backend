@@ -20,10 +20,6 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: false
-  kafka:
-    bootstrap-servers: localhost:9092
-    listener:
-      missing-topics-fatal: false
   data:
     mongodb:
       uri: mongodb://localhost:27017/cover

@@ -5,6 +5,7 @@ import com.web.bookstorebackend.dto.*;
 import com.web.bookstorebackend.model.*;
 import com.web.bookstorebackend.service.CartService;
 import com.web.bookstorebackend.service.OrderService;
+import com.web.bookstorebackend.util.WebSocketServer;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import java.time.Instant;
 import java.util.*;
 
 @Service
+//@Transactional("transactionManager")
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
@@ -38,6 +40,9 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private WebSocketServer ws;
+
     public GetOrdersDto getOrders(int userId, String keyword, Pageable pageable,
                                     String startTime, String endTime) {
         Instant start = Objects.equals(startTime, "") ? Instant.EPOCH : Instant.parse(startTime + "Z");
@@ -52,8 +57,8 @@ public class OrderServiceImpl implements OrderService {
         return orderDao.findOrdersByKeyword(keyword, pageable, start, end);
     }
 
-    @Transactional
-    public String addOrderFromCart(AddOrderFromCartDto addOrderFromCartDto, int userId) {
+    @Transactional("transactionManager")
+    public String addOrderFromCart(AddOrderFromCartDto addOrderFromCartDto, int userId) throws InterruptedException {
         List<Integer> cartIds = addOrderFromCartDto.getItemIds();
         List<CartItem> cartItems = cartItemDao.findByItemIds(cartIds);
 
@@ -106,11 +111,14 @@ public class OrderServiceImpl implements OrderService {
         orderDao.setOrderItems(orderId, orderItems);
         cartItemDao.deleteItems(cartItems);
 
-        return "Add order from cart successfully, order id: " + orderId;
+        String result = "Add order from cart successfully, order id: " + orderId;
+        ws.sendMessageToUser(String.valueOf(userId), result);
+
+        return result;
     }
 
-    @Transactional
-    public String addOrderFromBook(int bookId, AddOrderFromBookDto addOrderFromBookDto, int userId) {
+    @Transactional("transactionManager")
+    public String addOrderFromBook(int bookId, AddOrderFromBookDto addOrderFromBookDto, int userId) throws InterruptedException {
         AddToCartDto addToCartDto = new AddToCartDto(bookId, addOrderFromBookDto.getNumber());
         int itemId = cartService.addToCart(addToCartDto, userId);
         CartItem cartItem = cartItemDao.findById(itemId);
@@ -136,7 +144,10 @@ public class OrderServiceImpl implements OrderService {
         orderDao.setOrderItems(orderId, orderItems);
 
         cartItemDao.deleteItem(cartItem);
-        return "Add order from book successfully, order id: " + orderId;
+
+        String result = "Add order from book successfully, order id: " + orderId;
+        ws.sendMessageToUser(String.valueOf(userId), result);
+        return result;
     }
 
     public List<GetBuyBookDto> getBuyBooks(String startTime, String endTime, int userId) {
