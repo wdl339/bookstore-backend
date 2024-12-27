@@ -98,8 +98,8 @@ public class UserServiceImpl implements UserService {
 
         for (Order order : orders) {
             List<OrderItem> orderItems = order.getItems();
+            Integer userId = order.getUserId();
             for (OrderItem orderItem : orderItems) {
-                Integer userId = orderItem.getUserId();
                 Integer number = orderItem.getNumber();
                 if (rankUsers.containsKey(userId)) {
                     rankUsers.put(userId, rankUsers.get(userId) + number);
