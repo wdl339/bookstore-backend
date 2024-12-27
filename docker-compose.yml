@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: wdl339
+      MYSQL_DATABASE: bookstore
+      MYSQL_PASSWORD: wdl339
+    ports:
+      - "3307:3306"
+    volumes:
+      - D:\code_course\mysql\init.sql:/docker-entrypoint-initdb.d/init.sql
+      - D:\code_course\mysql\data:/var/lib/mysql
+    user: "999:999"
+
+  app:
+    build: .
+    container_name: bookstore-backend
+    environment:
+        MYSQL_HOST: db
+        MYSQL_PORT: 3306
+        MYSQL_DATABASE: bookstore
+        MYSQL_USER: root
+        MYSQL_PASSWORD: wdl339
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+#  docker-compose up --build
+#  mysql -u root -p bookstore
+#  SELECT * FROM bookstore.books;
+#  show tables;
