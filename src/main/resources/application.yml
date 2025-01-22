@@ -56,3 +56,14 @@ spring:
 #  .\redis-server.exe .\redis.windows.conf
 #  .\redis-cli.exe flushall
 #  .\redis-cli.exe shutdown
+#
+#  cd D:\neo4j\neo4j-community-5.26.0\bin
+#  .\neo4j console
+#
+#  cd D:\InfluxData\influxdb
+#  cmd
+#  influxd
+#  cd D:\InfluxData\telegraf\telegraf-1.32.3
+#  cmd
+#  set INFLUX_TOKEN=IA8RMuH0kBsogctbt5se0kn7j_q2Sle0uI6pVkYhpgZDboICDzB1JSozv-DO-3Qj_L4VAYhBs6haEErpEaWqdQ==
+#  telegraf --config http://localhost:8086/api/v2/telegrafs/0e1078afb146f000
